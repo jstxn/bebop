@@ -2,6 +2,14 @@
 
 **Revolutionary control-plane for AI agent sessions that saves 90%+ tokens and makes optimization automatic.**
 
+⚠️ **Important Status Update:**
+
+- **Specification:** Complete (12,000+ lines of docs)
+- **Manual Wrappers:** Available (scripts/bebopt.sh, etc.)
+- **Automatic Integration:** **In design phase only** - not yet implemented
+- See [IMPLEMENTATION_GAPS_REVIEW.md](IMPLEMENTATION_GAPS_REVIEW.md) for detailed gap analysis
+- See [IMPLEMENTATION_PLAN_V2.md](IMPLEMENTATION_PLAN_V2.md) for revised implementation approach
+
 ---
 
 ## What We've Built
@@ -9,17 +17,20 @@
 ### 📦 Complete Foundation (10 Commits, 12,000+ Lines)
 
 **1. Core Specifications**
+
 - ✅ Directive syntax (`&use`, `&pack`, `&plan`, `&svc`, `&step`, `&rules`)
 - ✅ Pack IR format (atomic rules, applicability, enforcement hooks)
 - ✅ Plan IR format (state machine, step execution, variable substitution)
 - ✅ 7-phase implementation roadmap
 
 **2. Source Code**
+
 - ✅ Error handling system (30+ error types with suggestions)
 - ✅ Workspace detector (auto-detects repos, services, languages)
 - ✅ Package.json ready for npm publishing
 
 **3. Documentation (8 Comprehensive Guides)**
+
 - ✅ [README.md](README.md) - Project overview
 - ✅ [DIRECTIVES.md](DIRECTIVES.md) - Directive specification
 - ✅ [PACKS.md](PACKS.md) - Pack format
@@ -28,23 +39,28 @@
 - ✅ [CONTRIBUTING.md](CONTRIBUTING.md) - Open source guide
 
 **4. Integration Guides (3 Complete)**
+
 - ✅ [AI CLI Tools Integration](docs/integrations/ai-cli-tools.md) - Claude, opencode, Cursor, Copilot, GPT-4
 - ✅ [Claude Code Integration](docs/integrations/claude-code.md) - Comprehensive Claude Code guide
 - ✅ [Cursor Integration](docs/integrations/cursor.md) - Cursor-specific integration
 
 **5. User Guides (3 Complete)**
+
 - ✅ [Migration Guide](docs/migration-guide.md) - 4-week team rollout
 - ✅ [Performance Guide](docs/performance.md) - Real-world benchmarks (93% savings proven)
 - ✅ [Troubleshooting Guide](docs/troubleshooting.md) - Common issues & solutions
 
 **6. Quick Start Guides (2)**
+
 - ✅ [TRY_WITH_CLAUDE.md](TRY_WITH_CLAUDE.md) - 2-minute Claude Code setup
 - ✅ [QUICKSTART_CLI.md](QUICKSTART_CLI.md) - 5-minute AI CLI setup
 
 **7. Visual Examples**
+
 - ✅ [Visual Examples](docs/examples/visual-examples.md) - See exactly what happens
 
 **8. Ready-to-Use Scripts (5)**
+
 - ✅ [bebopt.sh](scripts/bebopt.sh) - Universal wrapper (works with ANY AI CLI)
 - ✅ [bebop-claude.sh](scripts/bebop-claude.sh) - Claude Code specific
 - ✅ [bebop-opencode.sh](scripts/bebop-opencode.sh) - opencode specific
@@ -52,21 +68,25 @@
 - ✅ Scripts documentation
 
 **9. Templates (3)**
+
 - ✅ [core-security.md](templates/packs/core-security.md) - 10 security rules
 - ✅ [core-code-quality.md](templates/packs/core-code-quality.md) - 12 quality rules
 - ✅ [backend-create-rest-endpoint.md](templates/plans/backend-create-rest-endpoint.md) - 12-step plan
 
 **10. Example Artifacts (3)**
+
 - ✅ [example-monorepo-core@v1.md](packs/example-monorepo-core@v1.md) - Real-world pack
 - ✅ [example-screener-create-endpoint@v1.md](plans/example-screener-create-endpoint@v1.md) - Real-world plan
 - ✅ [example-microservices.md](projects/example-microservices.md) - Real-world project
 
 **11. Skills System (NEW!)**
+
 - ✅ [skills/README.md](skills/README.md) - Skills directory index
 - ✅ [skills/bebop-auto-skill.md](skills/bebop-auto-skill.md) - Complete auto-skill implementation
 - ✅ [AUTO_SKILL.md](AUTO_SKILL.md) - User-facing skill documentation
 
 **12. Project Index**
+
 - ✅ [INDEX.md](INDEX.md) - Complete navigation and overview
 
 ---
@@ -95,7 +115,7 @@ What AI receives:
 - Costs $0.04
 ```
 
-### With Auto-Skill
+### With Auto-Skill (Planned)
 
 ```bash
 # User just types naturally
@@ -118,9 +138,13 @@ What AI receives:
 Savings: 91% tokens, 92% faster, 90% cheaper
 ```
 
+⚠️ **Note:** Auto-skill is currently in **design phase**. Implementation pending.
+See [IMPLEMENTATION_PLAN_V2.md](IMPLEMENTATION_PLAN_V2.md) for details.
+
 ### How It Works
 
 **Automatic Context Detection:**
+
 - Project type (frontend, backend, mobile, library)
 - Language (TypeScript, Python, Go, Rust, etc.)
 - Framework (NestJS, React, Django, Rails, etc.)
@@ -129,6 +153,7 @@ Savings: 91% tokens, 92% faster, 90% cheaper
 - Git branch awareness (feature, bugfix, release)
 
 **Smart Pack Selection:**
+
 - Always includes: core/security, core/code-quality
 - Type-specific: TypeScript, Python, Go packs
 - Framework-specific: NestJS, React, Django packs
@@ -150,18 +175,19 @@ Savings: 91% tokens, 92% faster, 90% cheaper
 
 ### Performance
 
-| Metric | Without | With Auto-Skill | Improvement |
-|--------|---------|-----------------|-------------|
-| Tokens per prompt | 1,320 | 120 | **91% reduction** |
-| Response time | 90s | 7s | **92% faster** |
-| Cost per session | $0.04 | $0.004 | **90% cheaper** |
-| User effort | High | Zero | **100% easier** |
+| Metric            | Without | With Auto-Skill | Improvement       |
+| ----------------- | ------- | --------------- | ----------------- |
+| Tokens per prompt | 1,320   | 120             | **91% reduction** |
+| Response time     | 90s     | 7s              | **92% faster**    |
+| Cost per session  | $0.04   | $0.004          | **90% cheaper**   |
+| User effort       | High    | Zero            | **100% easier**   |
 
 ---
 
 ## 📊 Project Metrics
 
 ### Repository Statistics
+
 ```
 Repository: https://github.com/jstxn/bebop
 Commits: 10
@@ -174,6 +200,7 @@ Skills: 1 (Bebop Auto-Skill)
 ```
 
 ### Documentation Coverage
+
 - ✅ Core specifications (4 files)
 - ✅ Integration guides (3 files)
 - ✅ User guides (3 files)
@@ -185,12 +212,14 @@ Skills: 1 (Bebop Auto-Skill)
 - ✅ Contributing guide (1 file)
 
 ### Code Coverage
+
 - ✅ Error handling (30+ error types)
 - ✅ Workspace detection (auto-detects repos, services, languages)
 - ✅ Package configuration (npm-ready)
 - ✅ Shell completion (bash, zsh, fish)
 
 ### Ready-to-Use Components
+
 - ✅ 3 integration scripts (universal, Claude, opencode)
 - ✅ 3 template packs (security, code-quality)
 - ✅ 1 template plan (REST endpoint creation)
@@ -203,6 +232,7 @@ Skills: 1 (Bebop Auto-Skill)
 ### Immediate Value
 
 **For Claude Code Users:**
+
 ```bash
 # Install (30 seconds)
 npm install -g @bebop/cli
@@ -218,6 +248,7 @@ claude "Create a user authentication system"
 ```
 
 **For Any AI CLI Users:**
+
 ```bash
 # Use pre-compile (0 setup)
 bebop compile "&use core example Create a feature"
@@ -284,24 +315,27 @@ bebopt claude "&use core example Create a feature"
 ## 📈 What's Next
 
 ### For Users
-- [ ] Try bebop with your AI CLI today
-- [ ] Load Bebop Auto-Skill into your agent
-- [ ] Save tokens immediately (93% reduction)
-- [ ] Share your experience in GitHub issues
+
+- [ ] Review IMPLEMENTATION_PLAN_V2.md for automatic integration approach
+- [ ] Try manual wrappers (scripts/bebopt.sh) if you want early access
+- [ ] Provide feedback on auto-skill specification
+- [ ] Share what you'd want from automatic integration
 
 ### For Contributors
-- [ ] Choose an issue to work on
-- [ ] Implement Phase 1 (directive parser)
-- [ ] Add new integration scripts
-- [ ] Create more template packs/plans
-- [ ] Improve documentation
+
+- [ ] Review revised implementation plan (IMPLEMENTATION_PLAN_V2.md)
+- [ ] Implement Phase 1 (context detection engine)
+- [ ] Implement Phase 2 (pack selection engine)
+- [ ] Implement Phase 3 (prompt compiler)
+- [ ] Create AI CLI hooks for Claude Code, opencode, Cursor
 
 ### For You (the Creator)
-- [ ] Share with others on social media
-- [ ] Gather feedback from early adopters
-- [ ] Decide: Build Phase 1 implementation?
-- [ ] Consider: Start with one AI CLI first?
-- [ ] Plan: How to scale beyond v1?
+
+- [ ] Review critical gaps in IMPLEMENTATION_GAPS_REVIEW.md
+- [ ] Decide: Prioritize automatic integration (revised plan)?
+- [ ] Decide: Start with Claude Code hook as MVP?
+- [ ] Gather feedback from early adopters on manual wrappers
+- [ ] Plan: Build context detection first, then pack selection, then compilation
 
 ---
 
@@ -335,23 +369,36 @@ bebopt claude "&use core example Create a feature"
 ## 🎉 Project Status
 
 ### What Exists
+
 ✅ Complete specification (12,000+ lines)
-✅ Ready-to-use scripts (5 wrappers)
+✅ Ready-to-use scripts (5 manual wrappers)
 ✅ Template packs/plans (3 artifacts)
 ✅ Comprehensive documentation (10 guides)
-✅ Auto-skill system (1 complete skill)
+✅ Auto-skill **specification** (1 complete skill - design phase only)
 ✅ npm package configuration
 ✅ MIT license
 ✅ .gitignore
+✅ Error handling system (30+ error types)
+✅ Workspace detector (basic)
 
 ### What's Missing (For Implementation)
-❌ Phase 0+0.5+1 implementation (directive parser + prompt compiler)
-❌ Phase 2: Local registry (full pack/plan management)
-❌ Phase 3: Init scaffolding
-❌ Phase 4: Packs (full management)
-❌ Phase 5: Plan runner with sessions
-❌ Phase 6: Enforcement hooks
-❌ Phase 7: Distribution + sharing
+
+**Critical - Automatic Integration (Revised Plan - See IMPLEMENTATION_PLAN_V2.md):**
+❌ Context detection engine (Phase 1)
+❌ Pack selection engine (Phase 2)
+❌ Prompt compiler (Phase 3)
+❌ AI CLI hook integration (Phase 4)
+❌ Auto-setup (`bebop init --auto`) (Phase 6)
+
+**Secondary - Supporting Features:**
+❌ Local registry (Phase 0.5)
+❌ Plan runner with sessions (Phase 5)
+❌ Enforcement hooks (Phase 6)
+❌ Distribution + sharing (Phase 7)
+
+**Note:** Current scripts (bebopt.sh, etc.) are **manual wrappers** requiring explicit invocation. Automatic integration via AI CLI hooks is not yet implemented.
+
+**Note:** Original implementation plan focused on manual directive usage. Revised plan (see IMPLEMENTATION_PLAN_V2.md) prioritizes automatic, invisible integration.
 
 ---
 
@@ -360,6 +407,7 @@ bebopt claude "&use core example Create a feature"
 **GitHub:** https://github.com/jstxn/bebop
 
 **Quick Links:**
+
 - [INDEX.md](INDEX.md) - Complete navigation
 - [README.md](README.md) - Project overview
 - [TRY_WITH_CLAUDE.md](TRY_WITH_CLAUDE.md) - Claude Code quick start
@@ -384,4 +432,4 @@ bebopt claude "&use core example Create a feature"
 
 **Start the revolution!** 🚀
 
-*Last updated: January 29, 2025*
+_Last updated: January 29, 2025_
