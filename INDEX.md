@@ -84,6 +84,39 @@ Everything you need to use, understand, or contribute to Bebop.
 
 ---
 
+## 🤖 Skills
+
+### Available Skills
+- [skills/README.md](skills/README.md) - Skills directory index
+- [skills/bebop-auto-skill.md](skills/bebop-auto-skill.md) - Auto-optimizes prompts (zero manual effort!)
+- [AUTO_SKILL.md](AUTO_SKILL.md) - User-facing skill documentation
+
+### Skill Features
+
+**Bebop Auto-Skill:**
+- ✅ Auto-detects project context (type, framework, language, service)
+- ✅ Auto-selects relevant Bebop packs based on detected context
+- ✅ Automatically compiles optimized prompts with Bebop
+- ✅ Works with any AI tool (Claude, opencode, Cursor, Codex, etc.)
+- ✅ 91% token savings automatically
+- ✅ Zero manual effort - no typing of `&use`, `&pack` directives needed
+
+### Usage
+
+```bash
+# Load the skill into your agent
+# See your agent's documentation for how to load skills
+
+# Then use your AI tool normally
+claude "Create a user authentication system"
+# Skill automatically optimizes the prompt!
+
+opencode "Create a REST API endpoint"
+# Skill auto-detects, selects packs, compiles, sends
+```
+
+---
+
 ## 📖 Contributing
 
 - [CONTRIBUTING.md](CONTRIBUTING.md) - How to contribute to Bebop
@@ -100,14 +133,15 @@ Everything you need to use, understand, or contribute to Bebop.
 
 ### Project Status
 - **Version:** 0.1.0 (Specification only)
-- **Commits:** 7
-- **Files:** 35+
-- **Lines:** 8,500+
+- **Commits:** 9
+- **Files:** 40+
+- **Lines:** 12,000+
 
 ### Documentation Coverage
 - **Integration guides:** 3 (Claude, AI CLI, Cursor)
 - **User guides:** 3 (Migration, Performance, Troubleshooting)
 - **Examples:** 1 comprehensive visual guide
+- **Skills:** 1 (Bebop Auto-Skill - automatic optimization)
 - **Templates:** 3 (2 packs, 1 plan)
 
 ### Key Features
@@ -131,6 +165,12 @@ Everything you need to use, understand, or contribute to Bebop.
 2. Read [docs/integrations/claude-code.md](docs/integrations/claude-code.md)
 3. See [docs/examples/visual-examples.md](docs/examples/visual-examples.md)
 4. Start using bebop-claude wrapper
+
+### I Want Automatic Optimization (Zero Effort)
+1. Read [AUTO_SKILL.md](AUTO_SKILL.md) - User-facing skill guide
+2. Read [skills/bebop-auto-skill.md](skills/bebop-auto-skill.md) - Complete skill implementation
+3. Load skill into your agent
+4. Use AI tool normally - skill does everything automatically!
 
 ### I Want to Use with Other AI CLI
 1. Read [QUICKSTART_CLI.md](QUICKSTART_CLI.md)
