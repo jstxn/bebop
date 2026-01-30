@@ -8,3 +8,4 @@ export * from './errors';
 export * from './init';
 export * from './enforcement';
 export * from './pack-manager';
+export * from './usage-log';
