@@ -235,7 +235,7 @@ Skills: 1 (Bebop Auto-Skill)
 
 ```bash
 # Install (30 seconds)
-npm install -g @bebop/cli
+npm install -g @bebophq/cli
 bebop init
 
 # Load skill (1 minute)
@@ -294,13 +294,13 @@ bebopt claude "&use core example Create a feature"
 ### For Claude Code Users
 
 1. Read [TRY_WITH_CLAUDE.md](TRY_WITH_CLAUDE.md)
-2. Install bebop: `npm install -g @bebop/cli && bebop init`
+2. Install bebop: `npm install -g @bebophq/cli && bebop init`
 3. Use normally - auto-skill handles everything!
 
 ### For Any AI CLI Users
 
 1. Read [QUICKSTART_CLI.md](QUICKSTART_CLI.md)
-2. Install bebop: `npm install -g @bebop/cli && bebop init`
+2. Install bebop: `npm install -g @bebophq/cli && bebop init`
 3. Use pre-compile or wrapper - save 93% tokens!
 
 ### For Teams

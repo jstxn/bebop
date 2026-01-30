@@ -24,7 +24,7 @@ Benchmarks collected from:
 
 **Environment:**
 - Node.js 20.10.0
-- @bebop/cli v0.1.0
+- @bebophq/cli v0.1.0
 - 100+ rules in registry
 - 20+ plans available
 

@@ -39,7 +39,7 @@ Instead of sending 500-1000 tokens of documentation to the model every prompt, B
 ### Installation
 
 ```bash
-npm install -g @bebop/cli
+npm install -g @bebophq/cli
 ```
 
 **Requires:** Node.js 18+

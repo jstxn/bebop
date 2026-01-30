@@ -37,7 +37,7 @@ check_command() {
     fi
 }
 
-check_command bebop "Bebop CLI" "npm install -g @bebop/cli"
+check_command bebop "Bebop CLI" "npm install -g @bebophq/cli"
 check_command opencode "opencode CLI" "See opencode documentation"
 
 # Get input

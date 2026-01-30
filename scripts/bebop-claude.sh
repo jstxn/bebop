@@ -25,7 +25,7 @@ print_warning() {
 
 # Check if bebop is installed
 if ! command -v bebop &> /dev/null; then
-    print_error "bebop CLI not found. Install with: npm install -g @bebop/cli"
+    print_error "bebop CLI not found. Install with: npm install -g @bebophq/cli"
     exit 1
 fi
 

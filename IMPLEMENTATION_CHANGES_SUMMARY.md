@@ -169,7 +169,7 @@ Users don't want another tool to manage. They want to use their AI tools normall
 **MVP User Experience:**
 
 ```bash
-$ npm install -g @bebop/cli
+$ npm install -g @bebophq/cli
 $ bebop init --auto
 
 Detected AI CLI tools:

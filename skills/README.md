@@ -35,7 +35,7 @@ Collection of skills for integrating Bebop with AI agents and tools.
 **Quick Start:**
 ```bash
 # 1. Install Bebop
-npm install -g @bebop/cli
+npm install -g @bebophq/cli
 bebop init
 
 # 2. Load the skill into your agent
@@ -292,7 +292,7 @@ packs:
 
 **A:** Yes! Skills depend on Bebop CLI. Install with:
 ```bash
-npm install -g @bebop/cli
+npm install -g @bebophq/cli
 bebop init
 ```
 

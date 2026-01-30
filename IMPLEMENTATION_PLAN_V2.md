@@ -757,7 +757,7 @@ Try: claude "Create a user authentication system"
 **MVP User Experience:**
 
 ```bash
-$ npm install -g @bebop/cli
+$ npm install -g @bebophq/cli
 $ bebop init --auto
 $ claude "Create a user login endpoint"
 # Automatic: context detected → packs selected → compiled → sent to Claude

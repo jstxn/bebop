@@ -81,7 +81,7 @@ Environment Variables:
   BEBOP_DEBUG        Enable debug output
 
 Quick Start:
-  1. Install bebop: npm install -g @bebop/cli
+  1. Install bebop: npm install -g @bebophq/cli
   2. Initialize:     bebop init
   3. Use wrapper:    bebopt claude "&use core example Create a feature"
 
@@ -96,7 +96,7 @@ check_bebop() {
         print_error "Bebop CLI not found."
         echo ""
         echo "Install with:"
-        echo "  npm install -g @bebop/cli"
+        echo "  npm install -g @bebophq/cli"
         echo ""
         echo "Then initialize:"
         echo "  bebop init"
