@@ -13,7 +13,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && node scripts/postbuild.js",
     "watch": "tsc --watch",
     "test": "jest",
     "test:unit": "jest tests/unit",
