@@ -162,6 +162,19 @@ export const errors = {
       ],
       { key, value, reason }
     ),
+
+  // Enforcement errors
+  ENFORCEMENT_FAILED: (violations: Array<{ ruleId: string; packId?: string; type: string }>) =>
+    new BebopError(
+      `Enforcement failed for ${violations.length} rule(s).`,
+      'ENFORCEMENT_FAILED',
+      [
+        'Remove sensitive values from your input',
+        'Adjust the relevant pack enforcement rules if needed',
+        'Disable enforcement with --no-enforce (if appropriate)'
+      ],
+      { violations }
+    ),
   
   // File system errors
   FILE_NOT_FOUND: (filePath: string) =>
