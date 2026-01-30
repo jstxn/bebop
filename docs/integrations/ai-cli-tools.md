@@ -16,6 +16,13 @@ How to use Bebop with your existing AI coding assistants.
 
 ---
 
+## Install Bebop
+
+```bash
+npm install -g @bebophq/cli
+bebop init
+```
+
 ## Quick Overview
 
 Bebop works with **any** AI CLI tool through 3 integration patterns:
