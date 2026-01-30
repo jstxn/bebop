@@ -21,6 +21,12 @@ Bebop solves the #1 problem in AI-assisted coding: **context bloat**.
 
 Instead of sending 500-1000 tokens of documentation to the model every prompt, Bebop moves instructions out-of-band and only sends compiled, minimal constraints.
 
+## Install
+
+```bash
+npm install -g @bebophq/cli
+```
+
 **Key benefits:**
 
 - 🚀 **90%+ token savings** - Only send what's needed
