@@ -239,18 +239,6 @@ export const errors = {
       { ruleId, reason }
     ),
   
-  ENFORCEMENT_FAILED: (hookType: string, details: string) =>
-    new BebopError(
-      `Enforcement hook failed: ${hookType}`,
-      'ENFORCEMENT_FAILED',
-      [
-        'Review the enforcement details',
-        'Fix the violations and try again',
-        'Use `&dry-run` to see what would be enforced'
-      ],
-      { hookType, details }
-    ),
-  
   // Network errors
   LLM_API_ERROR: (provider: string, message: string) =>
     new BebopError(
