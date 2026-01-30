@@ -14,7 +14,7 @@ This directory contains ready-to-use wrapper scripts for integrating Bebop with 
 
 ```bash
 # 1. Install Bebop
-npm install -g @bebop/cli
+npm install -g @bebophq/cli
 bebop init
 
 # 2. Copy wrapper script to your PATH
@@ -412,7 +412,7 @@ source ~/.bashrc
 **Solution:**
 ```bash
 # Install bebop
-npm install -g @bebop/cli
+npm install -g @bebophq/cli
 
 # Initialize
 bebop init
@@ -504,7 +504,7 @@ Found a bug or want to add support for a new AI CLI?
 
 # Check dependencies
 if ! command -v bebop &> /dev/null; then
-    echo "Bebop CLI not found. Install: npm install -g @bebop/cli"
+    echo "Bebop CLI not found. Install: npm install -g @bebophq/cli"
     exit 1
 fi
 

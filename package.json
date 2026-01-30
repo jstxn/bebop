@@ -1,5 +1,5 @@
 {
-  "name": "@bebop/cli",
+  "name": "@bebophq/cli",
   "version": "0.1.0",
   "description": "Control-plane for agent sessions - reduce token usage by 90%+ with indirection and stateful execution",
   "main": "dist/index.js",

@@ -4,7 +4,7 @@ Common issues and solutions for Bebop.
 
 ## Installation Issues
 
-### Issue: "npm install -g @bebop/cli" fails
+### Issue: "npm install -g @bebophq/cli" fails
 
 **Error:**
 ```
@@ -15,7 +15,7 @@ npm ERR! permission denied
 
 1. **Use sudo (not recommended):**
    ```bash
-   sudo npm install -g @bebop/cli
+   sudo npm install -g @bebophq/cli
    ```
 
 2. **Fix npm permissions (recommended):**
@@ -23,14 +23,14 @@ npm ERR! permission denied
    mkdir ~/.npm-global
    npm config set prefix '~/.npm-global'
    export PATH=~/.npm-global/bin:$PATH
-   npm install -g @bebop/cli
+   npm install -g @bebophq/cli
    ```
 
 3. **Use nvm (recommended for Node developers):**
    ```bash
    nvm install 18
    nvm use 18
-   npm install -g @bebop/cli
+   npm install -g @bebophq/cli
    ```
 
 ### Issue: "bebop: command not found"
@@ -44,7 +44,7 @@ which npm
 npm config get prefix
 
 # Check if bebop is installed
-npm list -g @bebop/cli
+npm list -g @bebophq/cli
 ```
 
 **Solutions:**
@@ -57,14 +57,14 @@ npm list -g @bebop/cli
 
 2. **Reinstall:**
    ```bash
-   npm uninstall -g @bebop/cli
-   npm install -g @bebop/cli
+   npm uninstall -g @bebophq/cli
+   npm install -g @bebophq/cli
    ```
 
 3. **Clear npm cache:**
    ```bash
    npm cache clean --force
-   npm install -g @bebop/cli
+   npm install -g @bebophq/cli
    ```
 
 ## Configuration Issues

@@ -5,7 +5,7 @@ Get started with Bebop and your favorite AI coding CLI in 5 minutes.
 ## Step 1: Install Bebop (1 minute)
 
 ```bash
-npm install -g @bebop/cli
+npm install -g @bebophq/cli
 bebop init
 ```
 

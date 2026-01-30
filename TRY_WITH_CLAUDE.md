@@ -10,7 +10,7 @@ Save 93% of your Claude Code tokens and get consistent, reliable results.
 
 ```bash
 # 1. Install bebop (30 seconds)
-npm install -g @bebop/cli
+npm install -g @bebophq/cli
 bebop init
 
 # 2. Compile prompt (10 seconds)
@@ -28,7 +28,7 @@ bebop compile &use core example "Create a user authentication system"
 
 ```bash
 # 1. Install bebop (30 seconds)
-npm install -g @bebop/cli
+npm install -g @bebophq/cli
 bebop init
 
 # 2. Setup wrapper (90 seconds)
@@ -156,7 +156,7 @@ bebop-claude "Create route handler for POST /users"
 
 ```bash
 # Install
-npm install -g @bebop/cli
+npm install -g @bebophq/cli
 bebop init
 
 # Try it

@@ -174,7 +174,7 @@ my-cli-agent() {
 
 ```bash
 # 1. Install bebop
-npm install -g @bebop/cli
+npm install -g @bebophq/cli
 bebop init
 
 # 2. Create wrapper function
@@ -328,7 +328,7 @@ Since opencode is an AI CLI tool (like me!), here's how to integrate:
 
 ```bash
 # 1. Install bebop
-npm install -g @bebop/cli
+npm install -g @bebophq/cli
 bebop init
 
 # 2. Create opencode wrapper
@@ -724,7 +724,7 @@ time bebop-claude &use core example "Create a feature"
 which bebop
 
 # If not found, install
-npm install -g @bebop/cli
+npm install -g @bebophq/cli
 
 # Verify
 bebop --version

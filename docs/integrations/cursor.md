@@ -8,7 +8,7 @@ Bebop works seamlessly with Cursor's AI coding assistant through CLI middleware.
 
 1. **Install bebop:**
    ```bash
-   npm install -g @bebop/cli
+   npm install -g @bebophq/cli
    bebop init
    ```
 
@@ -272,7 +272,7 @@ cc &svc userservice Add user CRUD endpoints
 which bebop
 
 # If not, install it
-npm install -g @bebop/cli
+npm install -g @bebophq/cli
 
 # Check PATH
 echo $PATH

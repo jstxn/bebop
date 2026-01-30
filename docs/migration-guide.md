@@ -127,7 +127,7 @@ find . -name "STYLE_GUIDE.md"
 **Install bebop:**
 ```bash
 # Team-wide installation
-npm install -g @bebop/cli
+npm install -g @bebophq/cli
 
 # Initialize bebop
 bebop init
@@ -217,7 +217,7 @@ cat > training/basic-usage.sh << 'EOF'
 echo "Bebop Training - Basic Usage"
 echo ""
 echo "1. Install bebop:"
-echo "   npm install -g @bebop/cli"
+echo "   npm install -g @bebophq/cli"
 echo ""
 echo "2. Initialize:"
 echo "   bebop init"
@@ -339,7 +339,7 @@ steps:
 
 ### Setup
 - [ ] Install Node.js 18+
-- [ ] Install bebop: `npm install -g @bebop/cli`
+- [ ] Install bebop: `npm install -g @bebophq/cli`
 - [ ] Initialize: `bebop init`
 - [ ] Initialize project: `cd my-project && bebop init --project`
 
@@ -661,7 +661,7 @@ EOF
 
 ```bash
 # Installation
-npm install -g @bebop/cli
+npm install -g @bebophq/cli
 bebop init
 cd my-project
 bebop init --project

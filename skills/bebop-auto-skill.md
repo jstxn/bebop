@@ -55,7 +55,7 @@ Savings: 91% tokens, 92% faster, 90% cheaper
 
 ```bash
 # 1. Install Bebop
-npm install -g @bebop/cli
+npm install -g @bebophq/cli
 bebop init
 
 # 2. Install skill

@@ -35,7 +35,7 @@ Bebop works with **both** the IDE and CLI through 3 patterns:
 ### Step 1: Install Bebop
 
 ```bash
-npm install -g @bebop/cli
+npm install -g @bebophq/cli
 bebop init
 ```
 
@@ -913,7 +913,7 @@ $ bebop-claude &use core/example &use core/security "Create a user authenticatio
 
 ```bash
 # 1. Install
-npm install -g @bebop/cli
+npm install -g @bebophq/cli
 bebop init
 
 # 2. Try pre-compile
