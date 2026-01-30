@@ -9,6 +9,16 @@ import { ParsedDirectives, parseDirectives } from './directive-parser';
 import { initRegistry, installAutoIntegration } from './init';
 import { BebopError, errors } from './errors';
 import { buildRegistry, importPack } from './pack-manager';
+import {
+  appendUsage,
+  countWords,
+  endSession,
+  formatSummary,
+  getActiveSession,
+  readUsageRecords,
+  startSession,
+  summarizeUsage,
+} from './usage-log';
 
 async function readStdin(): Promise<string> {
   if (process.stdin.isTTY) return '';
@@ -87,6 +97,48 @@ function shouldEnforce(options: { enforce?: boolean }): boolean {
   if (options.enforce === false) return false;
   if (process.env.BEBOP_ENFORCE === '0') return false;
   return true;
+}
+
+function resolveTool(options: { tool?: string }): string {
+  return options.tool || process.env.BEBOP_TOOL || 'cli';
+}
+
+async function logCompile(
+  tool: string,
+  input: string,
+  compiledText: string,
+  compiledStats: { originalTokens: number; compiledTokens: number; savings: number; ruleCount: number },
+  packs: string[],
+  context: { project: string; framework: string | null; service: string | null },
+): Promise<void> {
+  try {
+    let session = await getActiveSession(tool);
+    if (!session) {
+      session = await startSession(tool);
+    }
+    await appendUsage({
+      timestamp: new Date().toISOString(),
+      tool,
+      sessionId: session?.id || null,
+      input: {
+        chars: input.length,
+        words: countWords(input),
+      },
+      compiled: {
+        chars: compiledText.length,
+        words: countWords(compiledText),
+      },
+      originalTokens: compiledStats.originalTokens,
+      compiledTokens: compiledStats.compiledTokens,
+      savingsTokens: compiledStats.originalTokens - compiledStats.compiledTokens,
+      savingsPct: compiledStats.savings,
+      ruleCount: compiledStats.ruleCount,
+      packs,
+      context,
+    });
+  } catch {
+    // ignore logging errors
+  }
 }
 
 async function run(): Promise<void> {
@@ -240,6 +292,7 @@ async function run(): Promise<void> {
     .option('--cwd <path>', 'Working directory')
     .option('--json', 'Output JSON')
     .option('--no-enforce', 'Skip enforcement hooks')
+    .option('--tool <name>', 'Tool name for usage logging')
     .action(async (options) => {
       const stdinInput = await readStdin();
       const input = options.input || stdinInput || '';
@@ -263,6 +316,8 @@ async function run(): Promise<void> {
         config,
       });
       const compiled = await compiler.compile(input, context, selection.packs, { enforce: shouldEnforce(options) });
+      const tool = resolveTool(options);
+      await logCompile(tool, input, compiled.formatted, compiled.stats, selection.packs, compiled.context);
 
       if (compiled.stats.missingPacks.length > 0) {
         process.stderr.write(`Warning: missing packs: ${compiled.stats.missingPacks.join(', ')}\n`);
@@ -282,6 +337,28 @@ async function run(): Promise<void> {
       }
     });
 
+  hook
+    .command('session-start')
+    .option('--tool <name>', 'Tool name for session tracking')
+    .action(async (options) => {
+      const tool = resolveTool(options);
+      const session = await startSession(tool);
+      process.stderr.write(`Bebop session started: ${session.id}\n`);
+    });
+
+  hook
+    .command('session-end')
+    .option('--tool <name>', 'Tool name for session tracking')
+    .action(async (options) => {
+      const tool = resolveTool(options);
+      const result = await endSession(tool);
+      if (!result.summary) {
+        process.stderr.write('Bebop session summary unavailable.\n');
+        return;
+      }
+      process.stderr.write(`${formatSummary(result.summary)}\n`);
+    });
+
   program
     .command('compile')
     .option('--context <json>', 'Context JSON (from detect-context)')
@@ -291,6 +368,7 @@ async function run(): Promise<void> {
     .option('--json', 'Output JSON')
     .option('--auto', 'Ignore directives and auto-select packs')
     .option('--no-enforce', 'Skip enforcement hooks')
+    .option('--tool <name>', 'Tool name for usage logging')
     .argument('[task...]', 'User task')
     .action(async (args, options) => {
       const stdinInput = await readStdin();
@@ -313,6 +391,8 @@ async function run(): Promise<void> {
         config,
       });
       const compiled = await compiler.compile(cleanedInput, context, packs, { enforce: shouldEnforce(options) });
+      const tool = resolveTool(options);
+      await logCompile(tool, cleanedInput, compiled.formatted, compiled.stats, packs, compiled.context);
 
       if (compiled.stats.missingPacks.length > 0) {
         process.stderr.write(`Warning: missing packs: ${compiled.stats.missingPacks.join(', ')}\n`);
@@ -339,6 +419,7 @@ async function run(): Promise<void> {
     .option('--cwd <path>', 'Working directory')
     .option('--json', 'Output JSON')
     .option('--no-enforce', 'Skip enforcement hooks')
+    .option('--tool <name>', 'Tool name for usage logging')
     .argument('[task...]', 'User task')
     .action(async (args, options) => {
       const stdinInput = await readStdin();
@@ -358,6 +439,8 @@ async function run(): Promise<void> {
         config,
       });
       const compiled = await compiler.compile(input, context, selection.packs, { enforce: shouldEnforce(options) });
+      const tool = resolveTool(options);
+      await logCompile(tool, input, compiled.formatted, compiled.stats, selection.packs, compiled.context);
 
       if (compiled.stats.missingPacks.length > 0) {
         process.stderr.write(`Warning: missing packs: ${compiled.stats.missingPacks.join(', ')}\n`);
@@ -374,6 +457,39 @@ async function run(): Promise<void> {
         process.stdout.write(JSON.stringify(compiled, null, 2));
       } else {
         process.stdout.write(compiled.formatted);
+      }
+    });
+
+  program
+    .command('stats')
+    .option('--json', 'Output JSON')
+    .option('--tool <name>', 'Filter by tool')
+    .option('--session', 'Summarize current session only')
+    .option('--since <iso>', 'Filter records since ISO timestamp')
+    .action(async (options) => {
+      const tool = options.tool || null;
+      if (options.session) {
+        const active = await getActiveSession(tool || 'cli');
+        if (!active) {
+          process.stdout.write('No active session.\n');
+          return;
+        }
+        const records = await readUsageRecords({ tool: tool || 'cli', sessionId: active.id });
+        const summary = summarizeUsage(records, tool || 'cli', active.id);
+        if (options.json) {
+          process.stdout.write(JSON.stringify(summary, null, 2));
+        } else {
+          process.stdout.write(`${formatSummary(summary)}\n`);
+        }
+        return;
+      }
+
+      const records = await readUsageRecords({ tool: tool || undefined, since: options.since });
+      const summary = summarizeUsage(records, tool, null);
+      if (options.json) {
+        process.stdout.write(JSON.stringify(summary, null, 2));
+      } else {
+        process.stdout.write(`${formatSummary(summary)}\n`);
       }
     });
 

@@ -105,6 +105,7 @@ export function detectAiTools(): Record<string, boolean> {
     claude: commandExists('claude'),
     cursor: commandExists('cursor'),
     opencode: commandExists('opencode'),
+    codex: commandExists('codex'),
   };
 }
 
@@ -162,7 +163,7 @@ async function installClaudeHook(): Promise<void> {
   await fs.mkdir(hooksDir, { recursive: true });
 
   const hookPath = path.join(hooksDir, 'bebop-hook.sh');
-  await writeHookScript(hookPath);
+  await writeHookScript(hookPath, 'claude');
   await mergeHookSettings(path.join(baseDir, 'settings.json'), hookPath);
 }
 
@@ -172,7 +173,7 @@ async function installCursorHook(): Promise<void> {
   await fs.mkdir(hooksDir, { recursive: true });
 
   const hookPath = path.join(hooksDir, 'bebop-hook.sh');
-  await writeHookScript(hookPath);
+  await writeHookScript(hookPath, 'cursor');
   await mergeHookSettings(path.join(baseDir, 'settings.json'), hookPath);
 }
 
@@ -196,12 +197,24 @@ module.exports = {
   version: '1.0.0',
   sessionHooks: {
     async onUserPrompt(userInput) {
+      if (userInput.trim().startsWith('/bebop')) {
+        try {
+          const summary = execSync('bebop stats --session --tool opencode', {
+            encoding: 'utf8',
+            stdio: ['ignore', 'pipe', 'ignore'],
+          });
+          return summary.trim();
+        } catch {
+          return 'Bebop stats unavailable.';
+        }
+      }
+
       if (userInput.includes('Active constraints:')) {
         return userInput;
       }
 
       try {
-        const compiled = execSync('bebop hook compile', {
+        const compiled = execSync('bebop hook compile --tool opencode', {
           input: userInput,
           encoding: 'utf8',
           stdio: ['pipe', 'pipe', 'ignore'],
@@ -273,8 +286,18 @@ function buildAliasBlock(tools: string[]): string {
   const template = (tool: string) => `# Bebop automatic integration for ${tool}
 ${tool}() {
   local input="$*"
+  if [[ "$input" == "/bebop"* ]]; then
+    if [[ "$input" == "/bebop start"* ]]; then
+      bebop hook session-start --tool ${tool}
+    elif [[ "$input" == "/bebop end"* ]] || [[ "$input" == "/bebop summary"* ]]; then
+      bebop hook session-end --tool ${tool}
+    else
+      bebop stats --session --tool ${tool}
+    fi
+    return 0
+  fi
   if [[ "$input" != *"Active constraints:"* ]]; then
-    input=$(bebop compile-auto "$input")
+    input=$(bebop hook compile --tool ${tool} <<< "$input")
   fi
   command ${tool} "$input"
 }`;
@@ -286,19 +309,42 @@ ${tool}() {
   return functions.join('\n\n');
 }
 
-async function writeHookScript(hookPath: string): Promise<void> {
+async function writeHookScript(hookPath: string, toolName: string): Promise<void> {
   const content = `#!/bin/bash
 # Bebop auto integration hook
 set -e
 
+TOOL_NAME="${toolName}"
 USER_INPUT=$(cat)
+
+if [[ "$USER_INPUT" == "/new"* ]] && [[ "$BEBOP_SUMMARY_ON_NEW" == "1" ]]; then
+  bebop hook session-end --tool "$TOOL_NAME" >&2 || true
+  echo "$USER_INPUT"
+  exit 0
+fi
+
+if [[ "$USER_INPUT" == "/bebop"* ]]; then
+  if [[ "$USER_INPUT" == "/bebop start"* ]]; then
+    bebop hook session-start --tool "$TOOL_NAME" >&2
+    echo "Bebop session started."
+    exit 0
+  fi
+  if [[ "$USER_INPUT" == "/bebop end"* ]] || [[ "$USER_INPUT" == "/bebop summary"* ]]; then
+    summary=$(bebop hook session-end --tool "$TOOL_NAME" 2>&1)
+    echo "$summary"
+    exit 0
+  fi
+  summary=$(bebop stats --session --tool "$TOOL_NAME" 2>&1)
+  echo "$summary"
+  exit 0
+fi
 
 if [[ "$USER_INPUT" == *"Active constraints:"* ]]; then
   echo "$USER_INPUT"
   exit 0
 fi
 
-echo "$USER_INPUT" | bebop hook compile
+echo "$USER_INPUT" | bebop hook compile --tool "$TOOL_NAME"
 `;
 
   if (await fileExists(hookPath)) {
