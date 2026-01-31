@@ -18,7 +18,8 @@ export function parseDirectives(input: string): ParsedDirectives {
       hasDirectives = true;
       if (token === '&use') {
         i += 1;
-        while (i < tokens.length && !tokens[i].startsWith('&')) {
+        // Only accept tokens containing '/' as pack names (format: namespace/name)
+        while (i < tokens.length && !tokens[i].startsWith('&') && tokens[i].includes('/')) {
           packs.push(tokens[i]);
           i += 1;
         }
