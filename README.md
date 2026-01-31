@@ -2,6 +2,8 @@
 
 <div align="center">
 
+<img src="assets/bebop.png" alt="Bebop" width="150" height="150">
+
 **Automatic prompt optimization for AI coding agents**
 
 [![npm version](https://badge.fury.io/js/%40bebophq%2Fcli.svg)](https://badge.fury.io/js/%40bebophq%2Fcli)
