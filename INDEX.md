@@ -66,11 +66,6 @@ Everything you need to use, understand, or contribute to Bebop.
 ### Template Plans
 - [templates/plans/backend-create-rest-endpoint.md](templates/plans/backend-create-rest-endpoint.md) - REST endpoint creation plan
 
-### Example Artifacts
-- [packs/example-monorepo-core@v1.md](packs/example-monorepo-core@v1.md) - Example pack
-- [plans/example-screener-create-endpoint@v1.md](plans/example-screener-create-endpoint@v1.md) - Example plan
-- [projects/example-microservices.md](projects/example-microservices.md) - Example project config
-
 ---
 
 ## 🔧 Source Code

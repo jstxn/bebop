@@ -434,7 +434,7 @@ Suggestions:
 💡 Did you mean one of these?
   - core/security@v1
   - core/code-quality@v1
-  - example/monorepo-core@v1
+  - mycompany/backend@v1
 ```
 
 ### What User Sees (Success)

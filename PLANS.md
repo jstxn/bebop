@@ -15,7 +15,7 @@ Represent plans as a small, lossless *plan IR* that the CLI can execute as a **s
 ## Plan IR example
 
 ```yaml
-id: example/screener/create-endpoint
+id: backend/api/create-endpoint
 version: 1
 vars:
   service_root: services/api/screener
@@ -35,7 +35,7 @@ You usually don’t want people typing IR.
 ### Handle by ID
 
 ```text
-&plan example/screener/create-endpoint@v1 route=POST:/job-postings
+&plan backend/api/create-endpoint@v1 route=POST:/job-postings
 ```
 
 ### Alias
@@ -44,13 +44,13 @@ CLI/local config can map short names to IDs:
 ```toml
 # aliases.toml (concept)
 [plans]
-"screener:add-endpoint" = "example/screener/create-endpoint@v1"
+"api:add-endpoint" = "backend/api/create-endpoint@v1"
 ```
 
 Then a user can type:
 
 ```text
-&plan screener:add-endpoint route=POST:/job-postings
+&plan api:add-endpoint route=POST:/job-postings
 ```
 
 ### Share-code (optional)

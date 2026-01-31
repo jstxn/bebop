@@ -18,7 +18,7 @@ Recommended rule: only process directives from the *human’s prompt input*, nev
 Load a specific pack by ID:
 
 ```text
-&pack example/monorepo-core@v1
+&pack mycompany/backend@v1
 ```
 
 Load common packs via aliases:
