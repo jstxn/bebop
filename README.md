@@ -23,7 +23,18 @@ Bebop is a **guardrails layer** for AI coding assistants like **Claude Code**, *
 
 **The solution:** Bebop compiles your rules into **versioned constraint packs** and automatically injects the right constraints for the current context. This makes outputs more reliable and reduces rework. In workflows where teams currently paste long guidelines, it can also reduce prompt boilerplate significantly.
 
-**Note:** Bebop does **not** change a model’s hard context window or a provider’s usage limits—it helps you use the context you already have more effectively.
+**Note:** Bebop does **not** change a model's hard context window or a provider's usage limits—it helps you use the context you already have more effectively.
+
+---
+
+## Try it
+
+```bash
+npm install -g @bebophq/cli
+bebop init --auto
+```
+
+Then use your AI tool normally. Check the output—you'll see your standards being followed without reminders. That's it. No new commands to learn, no syntax to remember.
 
 ---
 
