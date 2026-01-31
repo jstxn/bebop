@@ -1,6 +1,6 @@
 {
   "name": "@bebophq/cli",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Guardrails + context layer for AI coding agents: compile standards into constraint packs and auto-apply them across tools",
   "main": "dist/index.js",
   "bin": {
