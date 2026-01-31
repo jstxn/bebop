@@ -1,5 +1,7 @@
 # Plan: backend/create-rest-endpoint@v1
 
+> Status: roadmap / concept. The current Bebop CLI does **not** execute plans yet (no `bebop plan run` / `bebop step`).
+
 A reusable plan for creating REST API endpoints.
 
 ```yaml
@@ -80,7 +82,7 @@ steps:
     description: "Update API documentation for {route_method} {route_path}"
 ```
 
-## Usage
+## Roadmap usage (concept)
 
 ### Basic Usage
 
@@ -288,6 +290,6 @@ bebop step 4
 
 ## See Also
 
-- [Pack Authoring Guide](../pack-authoring.md)
-- [Plan Authoring Guide](../plan-authoring.md)
-- [Testing Best Practices](../testing-best-practices.md)
+- `PACKS.md` (pack format + usage)
+- `PLANS.md` (plan runner roadmap)
+- `docs/troubleshooting.md`

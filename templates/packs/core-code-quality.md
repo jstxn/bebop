@@ -79,7 +79,8 @@ rules:
 ## Usage
 
 ```bash
-bebop pack use core/code-quality@v1
+bebop pack show core/code-quality@v1
+bebop compile "&use core/code-quality Refactor this function"
 ```
 
 ## Examples

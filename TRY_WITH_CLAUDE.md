@@ -1,6 +1,6 @@
 # 🎯 Try Bebop with Claude Code in 2 Minutes
 
-Save 93% of your Claude Code tokens and get consistent, reliable results.
+Get consistent, reliable guardrails in Claude Code (without changing how you work).
 
 ---
 
@@ -14,7 +14,7 @@ npm install -g @bebophq/cli
 bebop init
 
 # 2. Compile prompt (10 seconds)
-bebop compile &use core example "Create a user authentication system"
+bebop compile &use core/security &use core/code-quality "Create a user authentication system"
 
 # 3. Copy and paste to Claude Code (20 seconds)
 # Open Claude Code (Cmd+K in VS Code)
@@ -37,7 +37,7 @@ chmod +x ~/bin/bebop-claude
 export PATH="$HOME/bin:$PATH"
 
 # 3. Use it (10 seconds)
-bebop-claude &use core example "Create a user authentication system"
+bebop-claude &use core/security &use core/code-quality "Create a user authentication system"
 ```
 
 **Total time: 2 minutes** ✅
@@ -51,35 +51,19 @@ bebop-claude &use core example "Create a user authentication system"
 ```bash
 $ claude "Create a user authentication system"
 
-# What Claude receives:
-# "Create a user authentication system" (15 words, ~20 tokens)
-# + CLAUDE.md (674 lines, ~850 tokens)
-# + Coding standards (200 lines, ~250 tokens)
-# + Project guidelines (150 lines, ~200 tokens)
-#
-# Total: ~1,320 tokens
-# Cost: ~$0.04
-# Response time: ~90 seconds
+# What tends to happen over long sessions:
+# - You repeat standards manually (or assume they're remembered)
+# - The agent drifts (misses guardrails, style, tests, etc.)
 ```
 
 ### With Bebop
 
 ```bash
-$ bebop-claude &use core example "Create a user authentication system"
+$ bebop-claude &use core/security &use core/code-quality "Create a user authentication system"
 
-# What Claude receives:
-# "Create a user authentication system" (15 words, ~20 tokens)
-#
-# Active constraints:
-# - [NO_SECRETS] Never add secrets to code. (15 words, ~20 tokens)
-# - [WRITE_TEST_COVERAGE] Write tests for new functionality. (20 words, ~25 tokens)
-# - [USE_TYPED_INTERFACES] Use TypeScript interfaces. (15 words, ~20 tokens)
-#
-# Total: ~85 tokens
-# Cost: ~$0.003
-# Response time: ~7 seconds
-#
-# Savings: 94% (1,320 → 85 tokens)
+# What Claude receives (in addition to your task):
+# - Active constraints: a compact list of relevant guardrails
+# - Context line: project/service signals (when available)
 ```
 
 ---
@@ -90,7 +74,7 @@ $ bebop-claude &use core example "Create a user authentication system"
 
 ```bash
 # What you type:
-bebop-claude &use core example "Create a REST API endpoint"
+bebop-claude &use core/security &use core/code-quality "Create a REST API endpoint"
 
 # What happens:
 📋 Bebop compiled prompt (95 words)
@@ -105,26 +89,21 @@ Active constraints:
 # Claude responds with code following all constraints
 ```
 
-### Example 2: Using Plans
+### Example 2: Track a Session (Optional)
 
 ```bash
-# What you type:
-bebop plan run backend/create-rest-endpoint route=POST:/users name=CreateUser
+# Start a tracked session for Claude (usage/logging)
+bebop hook session-start --tool claude
 
-# Bebop guides you step-by-step
-📋 Plan: backend/create-rest-endpoint@v1
-📝 Session: session_20250129_090000_abc123
+# Use Claude Code with Bebop (multiple prompts)
+bebop-claude &use core/security &use core/code-quality "Create a REST API endpoint"
+bebop-claude &use core/security &use core/code-quality "Write tests for the endpoint"
 
-Step 1/12: Read service documentation
-💡 Complete this step, then run 'bebop step 2'
+# Check session summary at any time
+bebop stats --session --tool claude
 
-# Complete step 1, then:
-bebop step 2
-
-Step 2/12: Create route handler
-bebop-claude "Create route handler for POST /users"
-
-# Claude generates route handler with constraints
+# End session and print final summary
+bebop hook session-end --tool claude
 ```
 
 ---
@@ -152,7 +131,7 @@ bebop-claude "Create route handler for POST /users"
 
 ---
 
-## Start Saving Tokens Today!
+## Start Using Bebop Today!
 
 ```bash
 # Install
@@ -160,14 +139,14 @@ npm install -g @bebophq/cli
 bebop init
 
 # Try it
-bebop compile &use core example "Create a user service"
+bebop compile &use core/security &use core/code-quality "Create a user service"
 # Copy and paste to Claude Code
 
 # Or use wrapper
 cp scripts/bebop-claude.sh ~/bin/bebop-claude
 chmod +x ~/bin/bebop-claude
 export PATH="$HOME/bin:$PATH"
-bebop-claude &use core example "Create a user service"
+bebop-claude &use core/security &use core/code-quality "Create a user service"
 ```
 
-**Immediate 93% token savings!** 🚀
+**Immediate guardrails.** 🚀

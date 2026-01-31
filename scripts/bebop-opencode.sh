@@ -1,6 +1,6 @@
 #!/bin/bash
 # Bebop wrapper for opencode CLI
-# Usage: ./bebop-opencode.sh "&use core example Create a feature"
+# Usage: ./bebop-opencode.sh "&use core/security &use core/code-quality Create a feature"
 
 set -e
 
@@ -40,58 +40,54 @@ check_command() {
 check_command bebop "Bebop CLI" "npm install -g @bebophq/cli"
 check_command opencode "opencode CLI" "See opencode documentation"
 
-# Get input
-USER_INPUT="$@"
-
-# Check flags
-if [[ "$USER_INPUT" == *"--dry-run"* ]]; then
-    print_info "Dry run mode - showing compiled prompt"
-    echo ""
-    bebop compile "$USER_INPUT"
-    exit 0
-fi
-
-if [[ "$USER_INPUT" == *"--help"* ]] || [[ -z "$USER_INPUT" ]]; then
+show_help() {
     cat << 'EOF'
 Bebop wrapper for opencode CLI
 
-Usage: bebop-opencode "[directives] [task]"
+Usage: bebop-opencode [--dry-run] [--verbose] "[directives] [task]"
 
 Examples:
-  bebop-opencode "&use core example Create a user service"
-  bebop-opencode "&plan create-endpoint route=POST:/users name=CreateUser"
-  bebop-opencode "&svc userservice &use core/security Add login endpoint"
-  bebop-opencode "--dry-run &use core example Create a feature"
+  bebop-opencode "&use core/security &use core/code-quality Create a user service"
+  bebop-opencode --dry-run "&use core/security Create an endpoint"
 
 Options:
   --dry-run    Show compiled prompt without sending to opencode
   --help        Show this help message
-  --verbose      Show compilation details
+  --verbose      Print the raw input before compiling
 
 Directives:
-  &use <alias>     Load packs by alias (e.g., &use core example)
+  &use <alias>     Load packs by alias (e.g., &use core/security)
   &pack <id>       Load pack by ID (e.g., &pack core/security@v1)
-  &plan <id>       Load plan by ID with params (e.g., &plan create-endpoint route=POST:/users)
-  &svc <name>      Set service context (e.g., &svc userservice)
-  &step <n>        Jump to specific plan step
-  &rules +/-<id>    Enable/disable specific rules
-
-Session Management:
-  Start with: bebop session start
-  Continue:   bebop session continue
-  Show:       bebop session show
-  Step:        bebop step <n>
-
-Token Savings:
-  Without Bebop: ~1,300 tokens per prompt
-  With Bebop:    ~90 tokens per prompt
-  Savings:        93%
 
 Environment Variables:
-  BEBOP_DEBUG        Enable debug output
-  BEBOP_WORKSPACE     Set workspace path
-  BEBOP_CONFIG       Set config file path
+  BEBOP_WORKSPACE    Override detected workspace root
+  BEBOP_REGISTRY     Override registry path (default: ~/.bebop)
+  BEBOP_ENFORCE=0    Disable enforcement hooks
+  BEBOP_USAGE_LOG=0  Disable usage logging
+
+Usage tracking (optional):
+  bebop hook session-start --tool opencode
+  bebop stats --session --tool opencode
+  bebop hook session-end --tool opencode
 EOF
+}
+
+# Parse wrapper flags
+DRY_RUN=false
+VERBOSE=false
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --dry-run) DRY_RUN=true; shift ;;
+        --verbose) VERBOSE=true; shift ;;
+        --help|-h) show_help; exit 0 ;;
+        --) shift; break ;;
+        *) break ;;
+    esac
+done
+
+USER_INPUT="$*"
+if [[ -z "$USER_INPUT" ]]; then
+    show_help
     exit 0
 fi
 
@@ -104,16 +100,21 @@ fi
 
 # Compile prompt
 print_info "Compiling prompt with Bebop..."
-if [[ "$USER_INPUT" == *"--verbose"* ]]; then
-    COMPILED=$(bebop compile "$USER_INPUT" 2>&1)
-else
-    COMPILED=$(bebop compile "$USER_INPUT" 2>&1)
+if [[ "$VERBOSE" == "true" ]]; then
+    echo "Input: $USER_INPUT"
+    echo ""
 fi
 
-if [ $? -ne 0 ]; then
-    print_error "Compilation failed:"
-    echo "$COMPILED"
+if ! COMPILED=$(bebop compile --tool opencode <<< "$USER_INPUT"); then
+    print_error "Compilation failed"
     exit 1
+fi
+
+if [[ "$DRY_RUN" == "true" ]]; then
+    print_info "Dry run - compiled prompt:"
+    echo ""
+    echo "$COMPILED"
+    exit 0
 fi
 
 # Show stats

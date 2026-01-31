@@ -49,47 +49,38 @@ export PATH="$HOME/bin:$PATH"
 
 ```bash
 # Basic usage
-bebopt claude "&use core example Create a user authentication system"
+bebopt claude "&use core/security &use core/code-quality Create a user authentication system"
 
-# With plans
-bebopt claude "&plan create-endpoint route=POST:/users name=CreateUser"
-
-# With service context
-bebopt claude "&svc userservice &use core/security Add login endpoint"
+# Let Bebop auto-select packs (no directives)
+bebopt claude "Create a user authentication system"
 ```
 
 ### Using opencode
 
 ```bash
 # Basic usage
-bebopt opencode "&use core example Create a user authentication system"
+bebopt opencode "&use core/security &use core/code-quality Create a user authentication system"
 
-# With plans
-bebopt opencode "&plan create-endpoint route=POST:/users name=CreateUser"
+# Let Bebop auto-select packs (no directives)
+bebopt opencode "Create a user authentication system"
 ```
 
 ### Using Cursor
 
 ```bash
-bebopt cursor "&use core example Create a REST API"
+bebopt cursor "&use core/security &use core/code-quality Create a REST API"
 ```
 
-## Step 4: See the Savings (10 seconds)
+## Step 4: See What Gets Sent (10 seconds)
 
-Compare prompt sizes:
+Preview the compiled prompt (task + active constraints):
 
 ```bash
-# Without Bebop (send full documentation)
-echo "Create a user service" | wc -w
-# Output: 4 words
-# But you'd also send: CLAUDE.md (674 lines), coding standards (200 lines), etc.
-# Total: ~1,300 tokens
+# Show the exact text Bebop will send to your AI CLI:
+bebopt claude --dry-run "&use core/security &use core/code-quality Create a user service"
 
-# With Bebop (send only constraints)
-bebopt claude --dry-run "&use core example Create a user service" | wc -w
-# Output: ~90 words
-
-# Savings: 93% (1,300 → 90 tokens)
+# Tip: if your workflow currently involves pasting long guidelines into prompts,
+# this is where Bebop can dramatically reduce boilerplate.
 ```
 
 ## Quick Reference
@@ -109,107 +100,75 @@ bebop-claude "task"
 bebop-opencode "task"
 
 # Directives
-&use core example              # Load example pack
+&use core/security             # Load security pack
 &pack core/security@v1        # Load specific pack
-&plan create-endpoint route=POST:/users  # Load plan with params
-&svc userservice             # Set service context
-&step 3                      # Jump to step 3
-&rules +NO_SECRETS           # Enable rule
-&rules -TECH_BRIEF          # Disable rule
---dry-run                    # Show compiled prompt only
+
+# Wrapper options
+--dry-run                    # Show compiled prompt only (don’t send)
 --verbose                    # Show details
 ```
 
-### Session Management
+### Usage tracking (optional)
 
 ```bash
-# Start session
-bebop session start
+# Start a tracked session for a specific tool
+bebop hook session-start --tool claude
 
-# Continue session
-bebop session continue
+# See current session summary
+bebop stats --session --tool claude
 
-# Show session status
-bebop session show
-
-# Jump to step
-bebop step 3
-
-# End session
-bebop session end
+# End session and print final summary
+bebop hook session-end --tool claude
 ```
 
 ## What Just Happened?
 
-**Without Bebop:**
+**Without Bebop (typical):**
 ```
 You type: "Create a user authentication system"
 
-What gets sent to AI:
-- Your task (10 words)
-- Full CLAUDE.md (674 lines, ~850 tokens)
-- Full coding standards (200 lines, ~250 tokens)
-- Full project guidelines (150 lines, ~200 tokens)
-
-Total: ~1,310 tokens
+What happens:
+- You (or your team) repeat standards manually, or rely on docs being remembered
+- The agent may drift over long sessions
 ```
 
 **With Bebop:**
 ```
-You type: "bebopt claude &use core example Create a user authentication system"
+You type: "bebopt claude &use core/security &use core/code-quality Create a user authentication system"
 
 What Bebop does:
-1. Parse directive: &use core example
-2. Load pack: core/example@v1
-3. Extract rules: NO_SECRETS, WRITE_TESTS, etc.
-4. Compile prompt
+1. Loads packs
+2. Selects applicable rules
+3. Compiles a prompt with active constraints
 
 What gets sent to AI:
-- Your task (10 words)
-- Active constraints (3 rules, ~80 words)
-
-Total: ~90 tokens
-
-Savings: 93% (1,310 → 90 tokens)
+- Your task
+- A compact list of active constraints
 ```
-
-## Real Savings
-
-| Task | Without Bebop | With Bebop | Savings |
-|------|---------------|------------|---------|
-| Simple function | 850 tokens | 45 tokens | 95% |
-| CRUD endpoint | 1,200 tokens | 95 tokens | 92% |
-| Feature implementation | 2,500 tokens | 180 tokens | 93% |
-| **Average** | **1,328 tokens** | **90 tokens** | **93%** |
-
-**Daily cost savings (GPT-4 pricing):**
-- Without: $0.40/session
-- With: $0.03/session
-- **Savings: $0.37/session**
-- **Annual: $92.50/developer**
 
 ## Next Steps
 
 1. **Try it out:**
    ```bash
-   bebopt claude "&use core example Create a simple function"
+   bebopt claude "&use core/code-quality Create a simple function"
    ```
 
-2. **Use a plan:**
+2. **Inspect packs:**
    ```bash
-   bebopt opencode "&plan create-endpoint route=POST:/items name=CreateItem"
+   bebop pack list
+   bebop pack show core/security@v1
    ```
 
-3. **Start a session:**
+3. **Install automatic integration (hooks/plugins/aliases):**
    ```bash
-   bebop session start
-   bebopt claude "&use core example Create a user service"
+   bebop init --auto
    ```
 
 4. **Learn more:**
    - [Full Integration Guide](docs/integrations/ai-cli-tools.md)
    - [Scripts Documentation](scripts/README.md)
-   - [Getting Started](docs/getting-started.md)
+   - [Directives](DIRECTIVES.md)
+   - [Performance & measurement](docs/performance.md)
 
 ## Need Help?
 
@@ -219,4 +178,4 @@ Savings: 93% (1,310 → 90 tokens)
 
 ---
 
-**Start saving tokens today!** 🚀
+**Start shipping with guardrails.**

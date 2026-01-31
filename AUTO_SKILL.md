@@ -342,41 +342,13 @@ opencode "Add tests for the user service"
 
 ---
 
-## Performance
+## Impact
 
-### Without Auto-Skill
+The Auto-Skill feels “magical” because it makes guardrails automatic:
 
-```
-User asks: "Create a user authentication system"
-
-AI receives:
-- Task: 15 words (~20 tokens)
-- Full documentation: 1,300 words (~1,300 tokens)
-
-Total: 1,320 tokens
-Time: 90 seconds
-Cost: $0.04
-```
-
-### With Auto-Skill
-
-```
-User asks: "Create a user authentication system"
-
-Skill auto-selects packs → compiles → sends
-
-AI receives:
-- Task: 15 words (~20 tokens)
-- Relevant constraints: 15 rules (~100 words)
-
-Total: 120 tokens
-Time: 7 seconds
-Cost: $0.004
-
-Savings: 91% tokens
-Time saved: 92% faster
-Cost saved: 90% cheaper
-```
+- Standards are injected consistently (even when humans forget).
+- Pack selection adapts to your project/service/task context.
+- Over long sessions, you get less rework and fewer “redo this with our rules” loops.
 
 ---
 
@@ -458,8 +430,6 @@ EOF
 | **Usage** | Type &use &pack etc. | Just type normally |
 | **Context Detection** | Manual | Automatic |
 | **Pack Selection** | Manual | Automatic |
-| **Token Usage** | 1,320 tokens | 120 tokens |
-| **Response Time** | 90 seconds | 7 seconds |
 | **Consistency** | Variable | Deterministic |
 
 ---
@@ -471,7 +441,7 @@ EOF
 You just:
 1. Install skill once
 2. Use your AI tool normally
-3. Get 91% token savings automatically
+3. Get automatic guardrails
 
 **No manual typing of directives.**
 **No remembering pack names.**

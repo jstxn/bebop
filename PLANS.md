@@ -1,5 +1,7 @@
 # Plans: lossless plan IR + step runner
 
+> Status: roadmap / concept. The current Bebop CLI does **not** include `bebop plan ...` or `bebop step ...` commands yet.
+
 ## Problem
 A full implementation plan can be long. Even if it’s “perfect”, you pay token costs repeatedly if it stays in-context.
 

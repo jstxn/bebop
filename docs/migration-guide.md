@@ -87,7 +87,7 @@ find . -name "STYLE_GUIDE.md"
 
 **Prioritize based on:**
 - Frequency of use (daily > weekly > monthly)
-- Token cost (larger docs > smaller docs)
+- Rework cost (how often you have to correct the agent)
 - Repetition (repeat tasks > unique tasks)
 
 **Example prioritization:**
@@ -96,21 +96,17 @@ find . -name "STYLE_GUIDE.md"
 
 1. **CLAUDE.md** (674 lines)
    - Used daily
-   - Sent in every prompt
-   - Estimated savings: 90% tokens
-   - **Priority: HIGH** → Create pack immediately
+   - Common source of standards (easy to forget / inconsistently applied)
+   - **Priority: HIGH** → Extract guardrails into a pack
 
 2. **Endpoint creation workflow**
    - Repeated 10+ times/week
    - Multi-step process
-   - Estimated savings: 80% time
-   - **Priority: HIGH** → Create plan
+   - **Priority: HIGH** → Standardize the workflow (plan or checklist)
 
 3. **Refactoring guidelines** (120 lines)
    - Used weekly
-   - Moderate token cost
-   - Estimated savings: 70% tokens
-   - **Priority: MEDIUM** → Create pack in Phase 2
+   - **Priority: MEDIUM** → Create a pack in Phase 2
 
 4. **One-off tasks**
    - Unique prompts
@@ -132,15 +128,14 @@ npm install -g @bebophq/cli
 # Initialize bebop
 bebop init
 
-# Setup project namespace
-cd my-project
-bebop init --project
+# Optional: install automatic integration (hooks/plugins/aliases)
+bebop init --auto
 ```
 
 **Create initial pack:**
 ```bash
 # Create pack from CLAUDE.md
-bebop pack create --name my-company/core@v1
+bebop pack import ./my-company-core@v1.md
 
 # Edit the pack file
 vim ~/.bebop/packs/my-company-core@v1.md
@@ -198,14 +193,14 @@ bebop pack import CLAUDE.md
 
 1. **Introduction (15 min)**
    - What is Bebop?
-   - Why use it? (92% token savings)
+   - Why use it? (consistent guardrails + less rework)
    - How it works
 
 2. **Hands-on (30 min)**
    - Installation
    - Basic commands
    - Using packs
-   - Creating simple plans
+   - Auto-selection + stats
 
 3. **Q&A (15 min)**
 
@@ -222,11 +217,11 @@ echo ""
 echo "2. Initialize:"
 echo "   bebop init"
 echo ""
-echo "3. Use a pack:"
-echo "   bebop chat &use my-company/core Create a feature"
+echo "3. Compile a prompt with a pack:"
+echo "   bebop compile &use my-company/core Create a feature"
 echo ""
-echo "4. Check compiled prompt:"
-echo "   bebop chat --dry-run &use my-company/core Create a feature"
+echo "4. Check usage stats:"
+echo "   bebop stats"
 EOF
 ```
 
@@ -269,10 +264,10 @@ EOF
 **Based on pilot feedback:**
 
 ```bash
-# Create packs for different teams
-bebop pack create --name my-company/frontend@v1
-bebop pack create --name my-company/backend@v1
-bebop pack create --name my-company/mobile@v1
+# Create pack files (markdown/yaml), then import them
+bebop pack import ./my-company-frontend@v1.md
+bebop pack import ./my-company-backend@v1.md
+bebop pack import ./my-company-mobile@v1.md
 ```
 
 **Example frontend pack:**
@@ -302,18 +297,13 @@ rules:
       paths: ["src/components/**"]
 ```
 
-### 3.2 Create Common Plans
+### 3.2 Roadmap: Common Plans
 
 **Identify repetitive workflows:**
 
-```bash
-# Create plan for common tasks
-bebop plan create --name my-company/create-component
-bebop plan create --name my-company/create-api-endpoint
-bebop plan create --name my-company/refactor-function
-```
+Plan execution (a plan IR + step runner) is a **planned** feature. See `PLANS.md` for the roadmap.
 
-**Example plan - create component:**
+**Example plan (IR concept):**
 ```yaml
 id: my-company/create-component
 version: 1
@@ -341,24 +331,24 @@ steps:
 - [ ] Install Node.js 18+
 - [ ] Install bebop: `npm install -g @bebophq/cli`
 - [ ] Initialize: `bebop init`
-- [ ] Initialize project: `cd my-project && bebop init --project`
+- [ ] (Optional) Install auto integration: `bebop init --auto`
 
 ### Training
 - [ ] Complete basic training session
 - [ ] Read quick start guide
 - [ ] Try basic commands
 - [ ] Create first pack
-- [ ] Create first plan
+- [ ] Review plans roadmap (`PLANS.md`)
 
 ### Usage
 - [ ] Use bebop for daily tasks
-- [ ] Track token savings
+- [ ] Track impact (rework, iterations, bugs prevented)
 - [ ] Provide feedback
 
 ### Advanced
 - [ ] Customize packs
-- [ ] Create team-specific plans
-- [ ] Set up aliases
+- [ ] (Roadmap) Create team-specific plans
+- [ ] Set up shell aliases (via `bebop init --auto`)
 - [ ] Configure linting/validation
 ```
 
@@ -429,16 +419,13 @@ steps:
 bebop stats
 
 # Review output:
-📊 Bebop Statistics
-
-Sessions:
-  - Total: 23
-  - Active: 1
-  - This week: 15
-
-Token savings:
-  - Total saved: 127,450 tokens
-  - Average per session: 5,541 tokens
+Bebop usage summary
+Prompts: 23
+Est. tokens (unfiltered rules): 12,450
+Est. tokens (compiled): 1,890
+Est. reduction vs unfiltered: 10,560
+Avg reduction vs unfiltered: 85%
+Note: "unfiltered rules" = all rules from selected packs; token counts are estimates.
 ```
 
 **Track team adoption:**
@@ -446,10 +433,10 @@ Token savings:
 ```bash
 # Create adoption tracker
 cat > internal/bebop/adoption.csv << 'EOF'
-Week,Users,Sessions,Tokens Saved,Cost Saved
-1,3,15,5,000,$0.15
-2,5,25,12,000,$0.36
-3,8,40,20,000,$0.60
+Week,Users,Prompts,Avg constraints per prompt,Notes
+1,3,15,8,"pilot kickoff"
+2,5,25,10,"added core/security + core/code-quality"
+3,8,40,9,"refined applicability rules"
 EOF
 ```
 
@@ -465,7 +452,7 @@ EOF
 **Usage:**
 - Times used: 150
 - Teams using: All
-- Avg tokens saved: 85%
+- Avg constraints included: ____
 
 **Issues:**
 - [ ] Rule NO_XSVC_IMPORT too vague
@@ -491,7 +478,7 @@ EOF
 
 **Usage:**
 - Times run: 45
-- Success rate: 92%
+- Success rate: ____
 - Avg completion time: 45 min
 
 **Issues:**
@@ -543,12 +530,12 @@ EOF
 
 **Solutions:**
 1. **Start with pilot team** - Early adopters become advocates
-2. **Show ROI** - Demonstrate cost/time savings
+2. **Show ROI** - Demonstrate reduced rework and faster iteration
 3. **Make it easy** - Provide templates, examples, training
 4. **Support** - Office hours, Slack channel for help
 
 **Script:**
-> "I understand change is hard. Bebop is saving our pilot team 50% time and 90% token costs. In the first week, Alice saved 4 hours. Let me show you how easy it is to get started..."
+> "I understand change is hard. Bebop makes our standards automatic so we spend less time correcting the agent and more time shipping. Let me show you how easy it is to get started..."
 
 ### Challenge 2: Lack of Documentation
 
@@ -614,9 +601,8 @@ EOF
 | Metric | Baseline | Target | Actual |
 |--------|----------|--------|--------|
 | Team adoption | 0% | 80% | ____% |
-| Avg token usage/session | 1,328 | 150 | ____ |
-| Avg cost/session | $0.40 | $0.05 | ____ |
-| Avg time savings | 0% | 50% | ____ |
+| Avg turns to acceptable output | ____ | ____ | ____ |
+| “Redo with standards” incidents/week | ____ | ____ | ____ |
 | Number of packs | 0 | 10 | ____ |
 | Number of plans | 0 | 5 | ____ |
 
@@ -663,28 +649,31 @@ EOF
 # Installation
 npm install -g @bebophq/cli
 bebop init
-cd my-project
-bebop init --project
+# Optional: install hooks/plugins/aliases for detected tools
+bebop init --auto
 
 # Usage
-bebop chat &use my-company/core Create a feature
-bebop chat --dry-run &use my-company/core Create a feature
-bebop plan run my-company/create-api-endpoint route=POST:/users
+bebop compile &use my-company/core Create a feature
+bebop compile "Create a feature"  # let Bebop auto-select packs
 
 # Management
 bebop pack list
-bebop plan list
 bebop stats
-bebop session cleanup --days 7
+
+# Optional: tracked sessions for long runs
+bebop hook session-start --tool claude
+bebop hook session-end --tool claude
 ```
 
 ### Resources
 
-- [Getting Started Guide](getting-started.md)
-- [Pack Authoring Guide](pack-authoring.md)
-- [Plan Authoring Guide](plan-authoring.md)
+- [Quick Start](../QUICKSTART_CLI.md)
 - [Troubleshooting Guide](troubleshooting.md)
 - [Performance Guide](performance.md)
+- [AI CLI tools integration](integrations/ai-cli-tools.md)
+- [Directives](../DIRECTIVES.md)
+- [Packs](../PACKS.md)
+- [Plans roadmap](../PLANS.md)
 
 ---
 

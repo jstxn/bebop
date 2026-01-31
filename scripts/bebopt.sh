@@ -1,8 +1,8 @@
 #!/bin/bash
 # Universal Bebop wrapper for any AI CLI tool
-# Usage: ./bebopt.sh claude "&use core example Create a feature"
-#        ./bebopt.sh opencode "&use core example Create a feature"
-#        ./bebopt.sh cursor "&use core example Create a feature"
+# Usage: ./bebopt.sh claude "&use core/security &use core/code-quality Create a feature"
+#        ./bebopt.sh opencode "&use core/security &use core/code-quality Create a feature"
+#        ./bebopt.sh cursor "&use core/security &use core/code-quality Create a feature"
 
 set -e
 
@@ -50,40 +50,34 @@ Available Tools:
   gpt4         - OpenAI GPT-4 (via curl)
 
 Examples:
-  bebopt claude "&use core example Create a user service"
-  bebopt opencode "&plan create-endpoint route=POST:/users"
-  bebopt cursor "&svc userservice &use core/security Add login"
+  bebopt claude "&use core/security &use core/code-quality Create a user service"
+  bebopt opencode "&use core/security Create an endpoint"
+  bebopt cursor "&use core/code-quality Refactor this function"
 
 Directives:
   &use <alias>     Load packs by alias
   &pack <id>       Load pack by ID
-  &plan <id>       Load plan by ID
-  &svc <name>      Set service context
-  &step <n>        Jump to plan step
-  &rules +/-<id>   Override rules
-  &dry-run         Show compiled prompt only
 
 Options:
   --dry-run        Show compiled prompt without sending
   --verbose        Show detailed output
   --help           Show this help message
 
-Session Management:
-  Start:   bebop session start
-  Continue: bebop session continue
-  Show:     bebop session show
-  Step:     bebop step <n>
-  End:      bebop session end
+Usage tracking (optional):
+  bebop hook session-start --tool <tool>
+  bebop stats --session --tool <tool>
+  bebop hook session-end --tool <tool>
 
 Environment Variables:
-  BEBOP_DEFAULT_TOOL  Set default AI tool
   BEBOP_WORKSPACE     Set workspace path
-  BEBOP_DEBUG        Enable debug output
+  BEBOP_REGISTRY      Set registry path (default: ~/.bebop)
+  BEBOP_ENFORCE=0     Disable enforcement hooks
+  BEBOP_USAGE_LOG=0   Disable usage logging
 
 Quick Start:
   1. Install bebop: npm install -g @bebophq/cli
   2. Initialize:     bebop init
-  3. Use wrapper:    bebopt claude "&use core example Create a feature"
+  3. Use wrapper:    bebopt claude "&use core/security &use core/code-quality Create a feature"
 
 For more information:
   https://github.com/jstxn/bebop
@@ -138,6 +132,18 @@ get_ai_tool() {
 check_tool() {
     local tool=$1
     
+    if [[ "$tool" == "gpt4" ]]; then
+        if ! command -v curl &> /dev/null; then
+            print_error "curl not found. Install curl first."
+            exit 1
+        fi
+        if ! command -v jq &> /dev/null; then
+            print_error "jq not found. Install jq first."
+            exit 1
+        fi
+        return
+    fi
+
     if ! command -v $tool &> /dev/null; then
         print_error "Tool not found: $tool"
         echo ""
@@ -156,7 +162,7 @@ check_tool() {
                 echo "Install: npm install -g @githubnext/copilot-cli"
                 ;;
             gpt4)
-                echo "Need: curl and OPENAI_API_KEY environment variable"
+                echo "Need: curl, jq, and OPENAI_API_KEY environment variable"
                 ;;
         esac
         exit 1
@@ -179,6 +185,11 @@ run_gpt4() {
     
     if ! command -v curl &> /dev/null; then
         print_error "curl not found. Install curl first."
+        exit 1
+    fi
+
+    if ! command -v jq &> /dev/null; then
+        print_error "jq not found. Install jq first."
         exit 1
     fi
     
@@ -206,18 +217,21 @@ main() {
     
     local tool_name=$1
     shift
-    local user_input="$@"
-    
-    # Check for dry-run flag
     local dry_run=false
-    if [[ "$user_input" == *"--dry-run"* ]]; then
-        dry_run=true
-    fi
-    
-    # Check for verbose flag
     local verbose=false
-    if [[ "$user_input" == *"--verbose"* ]]; then
-        verbose=true
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --dry-run) dry_run=true; shift ;;
+            --verbose) verbose=true; shift ;;
+            --help|-h) show_help; exit 0 ;;
+            --) shift; break ;;
+            *) break ;;
+        esac
+    done
+    local user_input="$*"
+    if [[ -z "$user_input" ]]; then
+        show_help
+        exit 0
     fi
     
     # Get actual command
@@ -235,11 +249,8 @@ main() {
     fi
     
     local compiled
-    compiled=$(bebop compile "$user_input" 2>&1)
-    
-    if [ $? -ne 0 ]; then
-        print_error "Compilation failed:"
-        echo "$compiled"
+    if ! compiled=$(bebop compile --tool "$ai_tool" <<< "$user_input"); then
+        print_error "Compilation failed"
         exit 1
     fi
     

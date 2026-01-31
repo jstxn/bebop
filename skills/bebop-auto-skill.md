@@ -17,16 +17,10 @@ This skill:
 ```bash
 User: "Create a user authentication system"
 
-What AI receives:
-- Task (15 words, ~20 tokens)
-- Full documentation (1,300 tokens)
-  → CLAUDE.md (674 lines)
-  → Coding standards (200 lines)
-  → Project guidelines (150 lines)
-
-Total: ~1,320 tokens
-Time: 90 seconds
-Cost: $0.04
+What tends to happen:
+- People forget to include standards (or assume they're remembered)
+- Teams repeat the same “rules” message-by-message
+- The agent drifts over long sessions and across tools
 ```
 
 ### With This Skill
@@ -38,13 +32,11 @@ What Bebop Auto-Skill does:
 1. 🎯 Detects: TypeScript + NestJS + monorepo + userservice
 2. 📦 Auto-selects: core/security + core/nestjs + core/code-quality
 3. 🚀 Compiles: Optimized prompt with relevant constraints
-4. ✨ Sends: To AI with only 120 tokens
+4. ✨ Injects: The active constraints into your AI tool
 
-Total: ~120 tokens
-Time: 7 seconds
-Cost: $0.004
-
-Savings: 91% tokens, 92% faster, 90% cheaper
+Result:
+- Your standards show up consistently without manual prompting
+- Less rework (“please redo this, follow our conventions”)
 ```
 
 ---
@@ -447,48 +439,13 @@ $ opencode "Write comprehensive tests for the authentication flow"
 
 ---
 
-## Performance Comparison
+## Impact
 
-### Without Auto-Skill
+In long-running projects, this “feels like magic” because:
 
-```
-User: "Create a user authentication system"
-       ↓
-AI receives:
-  - Task: 15 words (20 tokens)
-  - Full CLAUDE.md: 674 lines (850 tokens)
-  - Coding standards: 200 lines (250 tokens)
-  - Project guidelines: 150 lines (200 tokens)
-       ↓
-Total: 1,320 tokens
-Time: 90 seconds
-Cost: $0.04
-```
-
-### With Auto-Skill
-
-```
-User: "Create a user authentication system"
-       ↓
-[Bebop Auto-Skill]
-       ↓
-1. Detect: TS + NestJS + monorepo + userservice
-2. Select: core/security + framework/nestjs + services/userservice
-3. Compile: 15 selected rules
-4. Send: Optimized prompt
-       ↓
-AI receives:
-  - Task: 15 words (20 tokens)
-  - Selected constraints: 15 rules (100 tokens)
-       ↓
-Total: 120 tokens
-Time: 7 seconds
-Cost: $0.004
-       ↓
-Savings: 91% tokens
-Time: 92% faster
-Cost: 90% cheaper
-```
+- **Guardrails stay on**: constraints are injected consistently even when humans forget.
+- **Cross-tool parity**: the same standards follow you across Claude Code, Cursor, opencode, and Codex.
+- **Potential efficiency**: fewer retries and fewer repeated guideline blocks (results vary by tool/workflow).
 
 ---
 
@@ -738,10 +695,7 @@ compilation:
 
 ✅ **Zero Setup** - Install once, works forever
 ✅ **Zero Effort** - Use AI tools normally, skill does the work
-✅ **91% Token Savings** - 1,320 → 120 tokens
-✅ **92% Faster** - 90 seconds → 7 seconds
-✅ **90% Cheaper** - $0.04 → $0.004 per session
-✅ **Always Correct** - Only selects relevant constraints
+✅ **Consistent Guardrails** - Standards are injected automatically
 ✅ **Context Aware** - Detects project, service, framework, language
 ✅ **Smart Selection** - Auto-selects packs based on context
 ✅ **Keyword Aware** - Adjusts based on task keywords

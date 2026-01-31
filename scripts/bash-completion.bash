@@ -1,90 +1,48 @@
 # Bash completion for bebop
-# Install: source this file in your .bashrc or add to /etc/bash_completion.d/bebop
+# Install: source this file from ~/.bashrc (or add to /etc/bash_completion.d/bebop)
 
 _bebop_completion() {
     local cur prev words cword
     _init_completion || return
 
-    # Handle --help and --version
+    # Global flags
     if [[ ${cur} == -* ]]; then
-        COMPREPLY=($(compgen -W "--help --version --debug --verbose" -- "${cur}"))
+        COMPREPLY=($(compgen -W "--help --version" -- "${cur}"))
         return
     fi
 
     # Top-level commands
     if [[ ${cword} -eq 1 ]]; then
         COMPREPLY=($(compgen -W "
+            detect-context
             init
-            chat
-            compile
-            session
+            select-packs
             pack
-            plan
-            config
-            alias
+            hook
+            compile
+            compile-auto
             stats
-            update
-            cleanup
-            help
         " -- "${cur}"))
         return
     fi
 
-    # Sub-commands
-    case ${prev} in
+    case ${words[1]} in
         init)
-            COMPREPLY=($(compgen -W "--project --import" -- "${cur}"))
+            COMPREPLY=($(compgen -W "--auto --registry --no-aliases --no-hooks --no-plugins" -- "${cur}"))
             ;;
-        chat)
-            if [[ ${cword} -eq 2 ]]; then
-                COMPREPLY=($(compgen -W "--dry-run --verbose" -- "${cur}"))
-            else
-                _bebop_complete_directives "${cur}"
-            fi
+        detect-context)
+            COMPREPLY=($(compgen -W "--cwd --input --json" -- "${cur}"))
             ;;
-        compile)
-            _bebop_complete_directives "${cur}"
-            ;;
-        session)
-            if [[ ${cword} -eq 2 ]]; then
-                COMPREPLY=($(compgen -W "
-                    start
-                    continue
-                    show
-                    list
-                    end
-                    resume
-                    step
-                    cleanup
-                " -- "${cur}"))
-            elif [[ ${cword} -eq 3 ]]; then
-                case ${words[2]} in
-                    step|resume)
-                        _bebop_complete_sessions "${cur}"
-                        ;;
-                    cleanup)
-                        COMPREPLY=($(compgen -W "--days" -- "${cur}"))
-                        ;;
-                esac
-            fi
+        select-packs)
+            COMPREPLY=($(compgen -W "--context --input --cwd --json --verbose" -- "${cur}"))
             ;;
         pack)
             if [[ ${cword} -eq 2 ]]; then
-                COMPREPLY=($(compgen -W "
-                    list
-                    show
-                    create
-                    compile
-                    test
-                    import
-                " -- "${cur}"))
+                COMPREPLY=($(compgen -W "list show import" -- "${cur}"))
             elif [[ ${cword} -eq 3 ]]; then
                 case ${words[2]} in
-                    show|compile|test)
+                    show)
                         _bebop_complete_packs "${cur}"
-                        ;;
-                    create)
-                        COMPREPLY=($(compgen -W "--name" -- "${cur}"))
                         ;;
                     import)
                         _bebop_complete_files "${cur}"
@@ -92,87 +50,46 @@ _bebop_completion() {
                 esac
             fi
             ;;
-        plan)
+        hook)
             if [[ ${cword} -eq 2 ]]; then
-                COMPREPLY=($(compgen -W "
-                    list
-                    show
-                    create
-                    compile
-                    run
-                " -- "${cur}"))
-            elif [[ ${cword} -eq 3 ]]; then
+                COMPREPLY=($(compgen -W "compile session-start session-end" -- "${cur}"))
+            else
                 case ${words[2]} in
-                    show|compile|run)
-                        _bebop_complete_plans "${cur}"
+                    compile)
+                        _bebop_complete_directives "${cur}"
                         ;;
-                    create)
-                        COMPREPLY=($(compgen -W "--name" -- "${cur}"))
+                    session-start|session-end)
+                        COMPREPLY=($(compgen -W "--tool" -- "${cur}"))
                         ;;
                 esac
             fi
             ;;
-        config)
-            if [[ ${cword} -eq 2 ]]; then
-                COMPREPLY=($(compgen -W "get set" -- "${cur}"))
-            elif [[ ${cword} -eq 3 ]]; then
-                _bebop_complete_config_keys "${cur}"
+        compile|compile-auto)
+            if [[ ${cur} == \&* ]]; then
+                _bebop_complete_directives "${cur}"
+            else
+                COMPREPLY=($(compgen -W "--json --auto --no-enforce --tool --context --cwd --input --packs" -- "${cur}"))
             fi
             ;;
-        alias)
-            if [[ ${cword} -eq 2 ]]; then
-                COMPREPLY=($(compgen -W "list add remove" -- "${cur}"))
-            fi
-            ;;
-        cleanup)
-            COMPREPLY=($(compgen -W "--dry-run --force" -- "${cur}"))
-            ;;
-        update)
-            COMPREPLY=($(compgen -W "--check" -- "${cur}"))
+        stats)
+            COMPREPLY=($(compgen -W "--json --tool --session --since" -- "${cur}"))
             ;;
     esac
 }
 
 _bebop_complete_directives() {
     local cur=$1
-    COMPREPLY=($(compgen -W "&use &pack &plan &svc &step &rules &dry-run" -- "${cur}"))
-}
-
-_bebop_complete_sessions() {
-    local cur=$1
-    # This would query bebop for available sessions
-    # For now, provide a placeholder
-    COMPREPLY=($(compgen -W "session_latest" -- "${cur}"))
+    COMPREPLY=($(compgen -W "&use &pack" -- "${cur}"))
 }
 
 _bebop_complete_packs() {
     local cur=$1
-    # This would query bebop for available packs
-    # For now, provide examples
-    COMPREPLY=($(compgen -W "core/example@v1 core/nestjs@v1" -- "${cur}"))
-}
-
-_bebop_complete_plans() {
-    local cur=$1
-    # This would query bebop for available plans
-    # For now, provide examples
-    COMPREPLY=($(compgen -W "core/simple-task@v1 core/create-endpoint@v1" -- "${cur}"))
-}
-
-_bebop_complete_config_keys() {
-    local cur=$1
-    COMPREPLY=($(compgen -W "
-        default_editor
-        llm_provider
-        llm_api_key
-        max_tokens_per_session
-        auto_cleanup_days
-    " -- "${cur}"))
+    COMPREPLY=($(compgen -W "core/security@v1 core/code-quality@v1" -- "${cur}"))
 }
 
 _bebop_complete_files() {
     local cur=$1
-    COMPREPLY=($(compgen -f -X "!@(*.md|*.txt)" -- "${cur}"))
+    COMPREPLY=($(compgen -f -X "!@(*.md|*.yaml|*.yml)" -- "${cur}"))
 }
 
 complete -F _bebop_completion bebop

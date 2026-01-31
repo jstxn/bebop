@@ -11,6 +11,26 @@ export function parseDirectives(input: string): ParsedDirectives {
 
   let i = 0;
   let hasDirectives = false;
+  const packNameTokenPattern = /^[a-z0-9][a-z0-9._@-]*$/i;
+  const knownNamespaces = new Set(['core', 'framework', 'tasks', 'services']);
+  const taskVerbs = new Set([
+    // Keep this conservative; it's only used to avoid mis-parsing prompts as packs.
+    'add',
+    'build',
+    'create',
+    'debug',
+    'document',
+    'explain',
+    'fix',
+    'generate',
+    'implement',
+    'improve',
+    'optimize',
+    'refactor',
+    'review',
+    'test',
+    'write',
+  ]);
 
   while (i < tokens.length) {
     const token = tokens[i];
@@ -18,10 +38,32 @@ export function parseDirectives(input: string): ParsedDirectives {
       hasDirectives = true;
       if (token === '&use') {
         i += 1;
-        // Only accept tokens containing '/' as pack names (format: namespace/name)
-        while (i < tokens.length && !tokens[i].startsWith('&') && tokens[i].includes('/')) {
-          packs.push(tokens[i]);
-          i += 1;
+        while (i < tokens.length && !tokens[i].startsWith('&')) {
+          const current = tokens[i];
+
+          if (current.includes('/') || current === '*') {
+            packs.push(current);
+            i += 1;
+            continue;
+          }
+
+          const namespace = current.toLowerCase();
+          const next = tokens[i + 1];
+          if (
+            knownNamespaces.has(namespace) &&
+            next &&
+            !next.startsWith('&') &&
+            !next.includes('/') &&
+            packNameTokenPattern.test(next) &&
+            !taskVerbs.has(next.toLowerCase())
+          ) {
+            packs.push(`${namespace}/${next}`);
+            i += 2;
+            continue;
+          }
+
+          // Stop parsing packs on the first token that doesn't unambiguously look like a pack.
+          break;
         }
         continue;
       }

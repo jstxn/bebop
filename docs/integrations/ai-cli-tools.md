@@ -70,10 +70,10 @@ User types: bebop-claude "create a user service"
 **Example:**
 ```bash
 # User command
-bebop-claude &use core example Create a user authentication system
+bebop-claude &use core/security &use core/code-quality Create a user authentication system
 
 # Bebop internally runs:
-compiled=$(bebop compile "&use core example Create a user authentication system")
+compiled=$(bebop compile "&use core/security &use core/code-quality Create a user authentication system")
 claude "$compiled"
 ```
 
@@ -96,7 +96,7 @@ Bebop compiles the prompt, you paste to your CLI.
 
 **How it works:**
 ```
-User types: bebop compile "&use core example Create a user service"
+User types: bebop compile "&use core/code-quality Create a user service"
            ↓
     Bebop CLI
            ↓
@@ -112,7 +112,7 @@ User types: bebop compile "&use core example Create a user service"
 **Example:**
 ```bash
 # Step 1: Compile
-$ bebop compile &use core example "Create a user authentication system"
+$ bebop compile &use core/security &use core/code-quality "Create a user authentication system"
 
 Task: Create a user authentication system
 
@@ -187,18 +187,22 @@ bebop init
 # 2. Create wrapper function
 cat > ~/bin/bebop-claude << 'EOF'
 #!/bin/bash
-USER_INPUT="$@"
-
-# Check if --dry-run flag
-if [[ "$USER_INPUT" == *"--dry-run"* ]]; then
-  bebop compile "$USER_INPUT"
-  exit 0
+DRY_RUN=false
+if [[ "$1" == "--dry-run" ]]; then
+  DRY_RUN=true
+  shift
 fi
 
+USER_INPUT="$*"
+
 # Compile prompt
-COMPILED=$(bebop compile "$USER_INPUT")
+COMPILED=$(BEBOP_TOOL=claude bebop compile "$USER_INPUT")
 
 # Send to Claude
+if [[ "$DRY_RUN" == "true" ]]; then
+  echo "$COMPILED"
+  exit 0
+fi
 claude "$COMPILED"
 EOF
 
@@ -212,16 +216,13 @@ echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bashrc
 **Usage:**
 ```bash
 # Basic usage
-bebop-claude &use core example "Create a user authentication system"
-
-# With plans
-bebop-claude &plan create-endpoint route=POST:/users name=CreateUser
+bebop-claude &use core/security &use core/code-quality "Create a user authentication system"
 
 # Dry run (see compiled prompt)
-bebop-claude --dry-run &use core example "Create a function"
+bebop-claude --dry-run &use core/code-quality "Create a function"
 
-# With service context
-bebop-claude &svc userservice &use core/security "Add login endpoint"
+# Let Bebop auto-select packs (no directives)
+bebop-claude "Create a user authentication system"
 ```
 
 ### Alternative: Shell Alias
@@ -231,7 +232,7 @@ bebop-claude &svc userservice &use core/security "Add login endpoint"
 alias claude='function _claude() { bebop compile "$@" | claude; }; _claude'
 
 # Usage
-claude &use core example "Create a feature"
+claude &use core/code-quality "Create a feature"
 ```
 
 ### Integration with opencode
@@ -250,28 +251,23 @@ EOF
 chmod +x ~/bin/bebop-opencode
 
 # Usage
-bebop-opencode &use core example "Create a user service"
+bebop-opencode &use core/code-quality "Create a user service"
 ```
 
-### Session Management
+### Usage tracking (optional)
 
 ```bash
-# Start a session
-bebop session start
+# Start a tracked session
+bebop hook session-start --tool claude
 
-# Use Claude with session context
-bebop-claude &use core example "Create user authentication"
-# ... continue working ...
+# Use Claude with Bebop
+bebop-claude &use core/security &use core/code-quality "Create user authentication"
 
-# Check session
-bebop session show
+# Check session summary
+bebop stats --session --tool claude
 
-# Jump to step
-bebop step 3
-
-# Continue session
-bebop session continue
-bebop-claude "Refactor the authentication"
+# End session and print final summary
+bebop hook session-end --tool claude
 ```
 
 ---
@@ -299,7 +295,7 @@ EOF
 chmod +x ~/bin/bebop-openai
 
 # Usage
-bebop-openai &use core example "Create a REST API"
+bebop-openai &use core/code-quality "Create a REST API"
 ```
 
 ### Alternative: Using curl directly
@@ -322,7 +318,7 @@ EOF
 chmod +x ~/bin/bebop-gpt4
 
 # Usage
-bebop-gpt4 &use core example "Create a function"
+bebop-gpt4 &use core/code-quality "Create a function"
 ```
 
 ---
@@ -366,34 +362,29 @@ echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bashrc
 **Usage:**
 ```bash
 # Basic usage
-bebop-opencode &use core example "Create a user authentication system"
-
-# With plans
-bebop-opencode &plan create-endpoint route=POST:/users name=CreateUser
-
-# With service context
-bebop-opencode &svc userservice &use core/security "Add login endpoint"
+bebop-opencode &use core/security &use core/code-quality "Create a user authentication system"
 
 # Dry run
-bebop-opencode --dry-run &use core example "Create a feature"
+bebop-opencode --dry-run &use core/code-quality "Create a feature"
+
+# Let Bebop auto-select packs (no directives)
+bebop-opencode "Create a user authentication system"
 ```
 
-### Session Integration
+### Usage tracking (optional)
 
 ```bash
-# Start session
-bebop session start
+# Start a tracked session
+bebop hook session-start --tool opencode
 
-# Use opencode with bebop
-bebop-opencode &use core example "Create user service"
-# ... continue working ...
+# Use opencode with Bebop
+bebop-opencode &use core/code-quality "Create user service"
 
-# Check session status
-bebop session show
+# Check session summary
+bebop stats --session --tool opencode
 
-# Continue session
-bebop session continue
-bebop-opencode "Refactor the service"
+# End session and print final summary
+bebop hook session-end --tool opencode
 ```
 
 ### Advanced: Function with Auto-Detection
@@ -424,29 +415,17 @@ EOF
 chmod +x ~/bin/bebop-opencode
 ```
 
-### Integration with opencode's Workflow
+### Roadmap: Plan runner
 
-If opencode has multi-step workflows:
+Long-term, Bebop will support multi-step plan execution via a plan IR + step runner. This is **not implemented** in the current CLI yet.
 
-```bash
-# Create plan for opencode workflows
-bebop plan create --name opencode/feature-development
-
-# Plan steps could include:
-# 1. Read relevant files
-# 2. Generate code with opencode
-# 3. Run tests
-# 4. Review and refine
-
-# Use the plan
-bebop plan run opencode/feature-development feature=add-user-auth
-```
+See `PLANS.md` for the roadmap.
 
 ---
 
 ## Cursor CLI
 
-Already covered in [Cursor Integration Guide](integrations/cursor.md), but quick summary:
+Already covered in [Cursor Integration Guide](cursor.md), but quick summary:
 
 ```bash
 # Create wrapper
@@ -460,7 +439,7 @@ EOF
 chmod +x ~/bin/bebop-cursor
 
 # Usage
-bebop-cursor &use core example "Create a user service"
+bebop-cursor &use core/code-quality "Create a user service"
 ```
 
 ---
@@ -485,7 +464,7 @@ EOF
 chmod +x ~/bin/bebop-copilot
 
 # Usage
-bebop-copilot &use core example "Create a function"
+bebop-copilot &use core/code-quality "Create a function"
 ```
 
 ---
@@ -498,7 +477,7 @@ Works with ANY CLI tool:
 
 ```bash
 # Step 1: Compile
-$ bebop compile &use core example "Create a user service"
+$ bebop compile &use core/code-quality "Create a user service"
 
 Task: Create a user service
 
@@ -527,9 +506,9 @@ bebopt() {
 }
 
 # Usage
-bebopt claude &use core example "Create a feature"
-bebopt opencode &use core example "Create a feature"
-bebopt cursor &use core example "Create a feature"
+bebopt claude &use core/code-quality "Create a feature"
+bebopt opencode &use core/code-quality "Create a feature"
+bebopt cursor &use core/code-quality "Create a feature"
 ```
 
 ### Pattern: Pipe-based
@@ -538,13 +517,13 @@ Use bebop output as input:
 
 ```bash
 # Compile and pipe to any tool
-bebop compile "&use core example Create a feature" | your-ai-cli
+bebop compile "&use core/code-quality Create a feature" | your-ai-cli
 
 # Or with shell function
 alias ai-bebop='bebop compile "$(cat)" | your-ai-cli'
 
 # Usage
-echo "&use core example Create a feature" | ai-bebop
+echo "&use core/code-quality Create a feature" | ai-bebop
 ```
 
 ---
@@ -575,7 +554,7 @@ bebopt() {
 }
 
 # Usage (automatically uses available tool)
-bebopt &use core example "Create a feature"
+bebopt &use core/code-quality "Create a feature"
 ```
 
 ### Multi-Tool Support
@@ -587,8 +566,8 @@ bebopt-writing() { bebop compile "$@" | opencode; }
 bebopt-refactoring() { bebop compile "$@" | cursor; }
 
 # Usage
-bebopt-coding &use core example "Write a function"
-bebopt-writing &use core example "Write documentation"
+bebopt-coding &use core/code-quality "Write a function"
+bebopt-writing &use core/code-quality "Write documentation"
 bebopt-refactoring &use core/security "Refactor auth code"
 ```
 
@@ -616,7 +595,7 @@ bebopt-interactive() {
 }
 
 # Usage
-bebopt-interactive &use core example "Create a feature"
+bebopt-interactive &use core/code-quality "Create a feature"
 ```
 
 ### Environment Variable Configuration
@@ -635,25 +614,15 @@ bebopt-default() {
 }
 
 # Usage
-bebopt-default &use core example "Create a feature"
+bebopt-default &use core/code-quality "Create a feature"
 ```
 
-### Session State Management
+### Tool tagging (for stats)
 
 ```bash
-# Track which tool was used in session
-bebop session start --tool claude
-
-# Use with same tool
-bebopt-session() {
-  local session_info=$(bebop session show --json)
-  local tool=$(echo "$session_info" | jq -r '.metadata.tool')
-  local compiled=$(bebop compile "$@")
-  $tool "$compiled"
-}
-
-# Usage
-bebopt-session &use core example "Create a feature"
+# Tag usage records so `bebop stats --tool ...` works
+BEBOP_TOOL=claude bebop compile "&use core/code-quality Create a feature"
+BEBOP_TOOL=opencode bebop compile "&use core/code-quality Create a feature"
 ```
 
 ---
@@ -664,7 +633,7 @@ bebopt-session &use core example "Create a feature"
 
 ```bash
 # Use pre-compile pattern first
-$ bebop compile &use core example "Create a feature"
+$ bebop compile &use core/code-quality "Create a feature"
 # Copy and paste to your CLI
 ```
 
@@ -688,36 +657,34 @@ chmod +x ~/bin/bebop-claude
 
 ```bash
 # Always use --dry-run first
-bebop-claude --dry-run &use core example "Create a complex feature"
+bebop-claude --dry-run &use core/security &use core/code-quality "Create a complex feature"
 # Review compiled prompt
 # Then run without --dry-run
-bebop-claude &use core example "Create a complex feature"
+bebop-claude &use core/security &use core/code-quality "Create a complex feature"
 ```
 
-### 4. Check Token Savings
+### 4. Inspect Prompt Impact
 
 ```bash
-# Compare prompt sizes
+# Compare word counts (task-only vs compiled prompt)
 $ echo "Create a feature" | wc -w
 # Output: 3 words
 
-$ bebop compile "&use core example Create a feature" | wc -w
+$ bebop compile "&use core/security &use core/code-quality Create a feature" | wc -w
 # Output: 87 words (includes constraints)
 
-# Full documentation would be 500+ words
-# Savings: 82%
+# Tip: if your workflow currently involves pasting long guidelines into prompts,
+# this is where Bebop can reduce boilerplate. Otherwise, the win is consistency.
 ```
 
 ### 5. Monitor Performance
 
 ```bash
 # Track compilation time
-time bebop compile &use core example "Create a feature"
-# real 0m0.012s
+time bebop compile &use core/security &use core/code-quality "Create a feature"
 
 # Track end-to-end time
-time bebop-claude &use core example "Create a feature"
-# real 0m5.234s
+time bebop-claude &use core/security &use core/code-quality "Create a feature"
 ```
 
 ---
@@ -755,7 +722,7 @@ which claude opencode cursor copilot
 cat ~/bin/bebop-claude
 
 # Check if bebop compile works
-bebop compile "&use core example test"
+bebop compile "&use core/code-quality test"
 
 # Check if CLI tool works
 claude "test"
@@ -792,6 +759,9 @@ which bebop-claude
 
 ## See Also
 
-- [Cursor Integration Guide](integrations/cursor.md)
-- [CLI Reference](cli-reference.md)
-- [Troubleshooting Guide](troubleshooting.md)
+- [Cursor Integration Guide](cursor.md)
+- [Quick Start](../../QUICKSTART_CLI.md)
+- [Directives](../../DIRECTIVES.md)
+- [Packs](../../PACKS.md)
+- [Troubleshooting Guide](../troubleshooting.md)
+- [Performance & measurement](../performance.md)

@@ -176,10 +176,11 @@ export function formatSummary(summary: UsageSummary): string {
     lines.push(`Session: ${summary.sessionId}`);
   }
   lines.push(`Prompts: ${summary.totalPrompts}`);
-  lines.push(`Original tokens: ${summary.totalOriginalTokens}`);
-  lines.push(`Compiled tokens: ${summary.totalCompiledTokens}`);
-  lines.push(`Tokens saved: ${summary.totalSavingsTokens}`);
-  lines.push(`Average savings: ${summary.averageSavingsPct}%`);
+  lines.push(`Est. tokens (unfiltered rules): ${summary.totalOriginalTokens}`);
+  lines.push(`Est. tokens (compiled): ${summary.totalCompiledTokens}`);
+  lines.push(`Est. reduction vs unfiltered: ${summary.totalSavingsTokens}`);
+  lines.push(`Avg reduction vs unfiltered: ${summary.averageSavingsPct}%`);
+  lines.push(`Note: "unfiltered rules" = all rules from selected packs; token counts are estimates.`);
   if (summary.firstSeen) {
     lines.push(`First: ${summary.firstSeen}`);
   }

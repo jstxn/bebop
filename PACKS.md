@@ -12,7 +12,7 @@ A *pack* is a compiled set of:
 
 This enables:
 - Sending only a small subset of rules for the current task.
-- Enforcing constraints outside the model (e.g., “no secrets” scan), saving tokens and increasing reliability.
+- Enforcing constraints outside the model (e.g., “no secrets” scan), reducing rework and increasing reliability.
 
 ## Pack example (compiled form)
 
@@ -54,7 +54,7 @@ The CLI should select rules based on context such as:
 - Working directory (repo + service)
 - Changed file paths
 - Language (ts/js/py)
-- User-provided `&svc` and `&plan`
+- Framework/service signals detected from the repo (when available)
 
 Then it should send the model something like:
 
@@ -65,3 +65,9 @@ Active constraints:
 ```
 
 …and keep the rest out of context.
+
+## Working with packs (current CLI)
+- List packs: `bebop pack list`
+- Inspect a pack: `bebop pack show core/security@v1`
+- Import a pack file into your registry: `bebop pack import <file>`
+- Apply packs to a prompt: `bebop compile "&use core/security Create an endpoint"`

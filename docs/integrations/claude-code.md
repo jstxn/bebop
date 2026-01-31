@@ -54,7 +54,7 @@ export PATH="$HOME/bin:$PATH"
 
 ```bash
 # No installation needed - just use bebop compile
-bebop compile &use core example "Create a feature"
+bebop compile &use core/security &use core/code-quality "Create a feature"
 # Copy and paste to Claude Code
 ```
 
@@ -68,7 +68,7 @@ bebop compile &use core example "Create a feature"
 
 ```bash
 # Use wrapper instead of claude directly
-bebop-claude &use core example "Create a user authentication system"
+bebop-claude &use core/security &use core/code-quality "Create a user authentication system"
 
 # What happens:
 # 1. Bebop compiles prompt with constraints
@@ -82,17 +82,14 @@ bebop-claude &use core example "Create a user authentication system"
 ```bash
 $ claude "Create a user authentication system"
 
-# Claude receives:
-# "Create a user authentication system"
-# + full CLAUDE.md (674 lines, 850 tokens)
-# + full coding standards (200 lines, 250 tokens)
-# + full project guidelines (150 lines, 200 tokens)
-# Total: ~1,300 tokens
+# What can go wrong:
+# - Standards aren’t explicitly present in the prompt
+# - You end up pasting reminders and redoing work
 ```
 
 **With Bebop:**
 ```bash
-$ bebop-claude &use core example "Create a user authentication system"
+$ bebop-claude &use core/security &use core/code-quality "Create a user authentication system"
 
 # Claude receives:
 # "Create a user authentication system
@@ -102,9 +99,9 @@ $ bebop-claude &use core example "Create a user authentication system"
 # - [WRITE_TEST_COVERAGE] Write tests for new functionality.
 # - [USE_TYPED_INTERFACES] Use TypeScript interfaces."
 #
-# Total: ~90 tokens
-#
-# Savings: 93% (1,300 → 90 tokens)
+# Result:
+# - Guardrails are present up front as active constraints
+# - Less “redo this with our standards” back-and-forth
 ```
 
 ### Pattern 2: Pre-compile & Paste (Universal)
@@ -113,7 +110,7 @@ $ bebop-claude &use core example "Create a user authentication system"
 
 ```bash
 # Step 1: Compile
-$ bebop compile &use core example "Create a user authentication system"
+$ bebop compile &use core/security &use core/code-quality "Create a user authentication system"
 
 Task: Create a user authentication system
 
@@ -140,27 +137,23 @@ Active constraints:
 - [USE_TYPED_INTERFACES] Use TypeScript interfaces for all function parameters."
 ```
 
-### Pattern 3: Session-Based (Advanced)
+### Pattern 3: Usage Tracking Session (Advanced)
 
-**Best for:** Complex, multi-step tasks
+**Best for:** Long sessions where you want a lightweight summary of Bebop usage.
 
 ```bash
-# Start session
-$ bebop session start
+# Start a tracked session (optional)
+$ bebop hook session-start --tool claude
 
 # Use Claude Code with Bebop
-$ bebop-claude &use core example "Create user authentication"
-# ... Claude generates code ...
+$ bebop-claude &use core/security &use core/code-quality "Create user authentication"
+$ bebop-claude &use core/security &use core/code-quality "Write tests for authentication"
 
-# Continue session
-$ bebop session continue
-$ bebop-claude "Refactor authentication service"
-# ... Claude refactors code ...
+# View current session summary at any time
+$ bebop stats --session --tool claude
 
-# Jump to plan step
-$ bebop step 3
-$ bebop-claude "Write tests for authentication"
-# ... Claude writes tests ...
+# End session and print final summary
+$ bebop hook session-end --tool claude
 ```
 
 ---
@@ -173,7 +166,7 @@ $ bebop-claude "Write tests for authentication"
 
 ```bash
 # Terminal: Compile prompt
-$ bebop compile &use core example "Create a REST API endpoint"
+$ bebop compile &use core/security &use core/code-quality "Create a REST API endpoint"
 
 Task: Create a REST API endpoint
 
@@ -251,7 +244,7 @@ source ~/.bashrc
 
 ```bash
 # Compile and auto-copy
-$ claude-bebop &use core example "Create a user service"
+$ claude-bebop &use core/security &use core/code-quality "Create a user service"
 
 📋 Bebop compiled prompt (87 words)
 
@@ -302,8 +295,8 @@ export function activate(context: vscode.ExtensionContext) {
     async () => {
       // Get user input
       const input = await vscode.window.showInputBox({
-        prompt: 'Enter task (use directives like &use core example)',
-        placeHolder: '&use core example Create a feature'
+        prompt: 'Enter task (use directives like &use core/security)',
+        placeHolder: '&use core/security &use core/code-quality Create a feature'
       });
       
       if (!input) return;
@@ -397,7 +390,7 @@ function compileWithBebop(input: string): Promise<string> {
 
 ```bash
 # Basic usage
-$ bebop-claude &use core example "Create a user authentication system"
+$ bebop-claude &use core/security &use core/code-quality "Create a user authentication system"
 
 📋 Bebop compiled prompt (95 words)
 
@@ -411,45 +404,17 @@ Active constraints:
 # Claude's response appears directly in terminal
 ```
 
-**With Plans:**
+**Roadmap: Plan runner (not implemented yet)**
 
-```bash
-# Start a plan
-$ bebop plan run backend/create-rest-endpoint route=POST:/users name=CreateUser
+Long-term, Bebop will support multi-step plan execution via a plan IR + step runner.
 
-📋 Plan: backend/create-rest-endpoint@v1
-📝 Session: session_20250129_140000_xyz789
-
-Step 1/12: Read service documentation
-  → src/README.md
-
-💡 Complete this step, then run 'bebop step 2'
-
-# Complete step 1 (read docs)
-$ bebop step 2
-
-Step 2/12: Create route handler
-  → src/routes/users.ts
-
-# Use Claude to create route handler
-$ bebop-claude "Create route handler for POST /users"
-
-📋 Bebop compiled prompt (95 words)
-
-Active constraints:
-- [NO_SECRETS] Never add secrets...
-- [VALIDATE_ALL_INPUTS] Validate inputs...
-
-🤖 Sending to Claude...
-
-# Claude generates route handler code
-```
+See `PLANS.md` for the roadmap.
 
 **Dry Run Mode:**
 
 ```bash
 # See what would be sent
-$ bebop-claude --dry-run &use core example "Create a feature"
+$ bebop-claude --dry-run &use core/security &use core/code-quality "Create a feature"
 
 📋 Bebop compiled prompt (95 words)
 
@@ -484,7 +449,7 @@ claude-bebopt() {
 }
 
 # Usage
-$ claude-bebopt &use core example "Create a user service"
+$ claude-bebopt &use core/security &use core/code-quality "Create a user service"
 ```
 
 ### Method 3: Interactive Mode
@@ -501,18 +466,18 @@ claude-interactive() {
   # Show pack options
   echo ""
   echo "Available packs:"
-  echo "  1) core/example"
-  echo "  2) core/security"
-  echo "  3) core/code-quality"
-  echo "  4) No pack"
+  echo "  1) core/security"
+  echo "  2) core/code-quality"
+  echo "  3) core/security + core/code-quality"
+  echo "  4) Auto-select (no directives)"
   read -p "Select pack [1-4]: " pack_choice
   
   # Compile prompt
   local input="$task"
   case $pack_choice in
-    1) input="&use core example $input" ;;
-    2) input="&use core/security $input" ;;
-    3) input="&use core/code-quality $input" ;;
+    1) input="&use core/security $input" ;;
+    2) input="&use core/code-quality $input" ;;
+    3) input="&use core/security &use core/code-quality $input" ;;
     4) input="$input" ;;
   esac
   
@@ -542,22 +507,12 @@ $ claude-interactive
 **Scenario:** Building a new feature
 
 ```bash
-# Morning - Start session
+# Morning - Start a tracked session (optional)
 $ cd my-project
-$ bebop session start
+$ bebop hook session-start --tool claude
 
 # Task 1: Create API endpoint
-$ bebop-claude &plan create-endpoint route=POST:/items name=CreateItem
-
-📋 Plan: backend/create-rest-endpoint@v1
-📝 Session: session_20250129_090000_abc123
-
-Step 1/12: Read service documentation
-$ # Read docs...
-$ bebop step 2
-
-Step 2/12: Create route handler
-$ bebop-claude "Create route handler for POST /items"
+$ bebop-claude &use core/security &use core/code-quality "Create route handler for POST /items (CreateItem)"
 
 📋 Bebop compiled prompt (95 words)
 🤖 Sending to Claude...
@@ -566,9 +521,7 @@ $ bebop-claude "Create route handler for POST /items"
 $ # Implement the code...
 
 # Task 2: Add tests
-$ bebop step 7
-Step 7/12: Write tests
-$ bebop-claude "Write tests for CreateItem endpoint"
+$ bebop-claude &use core/security &use core/code-quality "Write tests for CreateItem endpoint"
 
 📋 Bebop compiled prompt (95 words)
 🤖 Sending to Claude...
@@ -578,8 +531,7 @@ $ # Run tests
 $ npm test
 
 # End of day
-$ bebop session end
-✅ Session closed: session_20250129_090000_abc123
+$ bebop hook session-end --tool claude
 ```
 
 ### Workflow 2: Bug Fixing
@@ -587,15 +539,15 @@ $ bebop session end
 **Scenario:** Fix authentication bug
 
 ```bash
-# Start session for bug fix
-$ bebop session start --bug-fix AUTH_001
+# Start a tracked session for this debugging run (optional)
+$ bebop hook session-start --tool claude
 
 # Dry run first - see what constraints apply
-$ bebop-claude --dry-run "Fix authentication bug in login endpoint"
+$ bebop-claude --dry-run "Fix authentication bug AUTH_001 in login endpoint"
 
 📋 Bebop compiled prompt (95 words)
 
-Task: Fix authentication bug in login endpoint
+Task: Fix authentication bug AUTH_001 in login endpoint
 
 Active constraints:
 - [NO_SECRETS] Never add secrets...
@@ -603,7 +555,7 @@ Active constraints:
 - [LOG_SECURITY_EVENTS] Log auth attempts...
 
 # Looks good - run without --dry-run
-$ bebop-claude "Fix authentication bug in login endpoint"
+$ bebop-claude "Fix authentication bug AUTH_001 in login endpoint"
 
 # Claude generates fix
 $ # Implement and test...
@@ -612,6 +564,9 @@ $ # Implement and test...
 $ bebop-claude &use core/code-quality "Write test to prevent this bug"
 
 # Claude generates test
+
+# End session and print summary
+$ bebop hook session-end --tool claude
 ```
 
 ### Workflow 3: Refactoring
@@ -619,8 +574,8 @@ $ bebop-claude &use core/code-quality "Write test to prevent this bug"
 **Scenario:** Refactor large service
 
 ```bash
-# Start refactoring session
-$ bebop session start --refactor UserService
+# Start a tracked session (optional)
+$ bebop hook session-start --tool claude
 
 # Refactor with constraints
 $ bebop-claude &use core/code-quality "Refactor UserService to be more testable"
@@ -641,6 +596,9 @@ $ # Review changes...
 $ bebop-claude "Write comprehensive tests for refactored UserService"
 
 # Claude generates tests
+
+# End session and print summary
+$ bebop hook session-end --tool claude
 ```
 
 ### Workflow 4: Onboarding New Developer
@@ -648,20 +606,23 @@ $ bebop-claude "Write comprehensive tests for refactored UserService"
 **Scenario:** Help new developer understand codebase
 
 ```bash
-# Create onboarding pack
-$ bebop pack create --name my-company/onboarding
-$ # Edit pack with:
+# Create an onboarding pack (markdown or yaml), then import it into your registry:
+$ bebop pack import ./my-company-onboarding@v1.md
+$ # Edit the pack to include:
 # - Architecture overview rules
 # - Coding standards
 # - Best practices
 
-# Onboarding session
-$ bebop session start --onboarding new-dev
+# Onboarding session (optional)
+$ bebop hook session-start --tool claude
 
 # Use Claude to explain codebase
 $ bebop-claude &use my-company/onboarding "Explain the authentication flow in this codebase"
 
 # Claude provides explanation with constraints relevant to your company
+
+# End session and print summary
+$ bebop hook session-end --tool claude
 ```
 
 ### Workflow 5: Code Review
@@ -669,8 +630,8 @@ $ bebop-claude &use my-company/onboarding "Explain the authentication flow in th
 **Scenario:** Reviewing a PR
 
 ```bash
-# Start code review session
-$ bebop session start --code-review PR-123
+# Start a tracked session (optional)
+$ bebop hook session-start --tool claude
 
 # Use Claude to review
 $ bebop-claude &use core/security &use core/code-quality "Review this PR for security and code quality issues"
@@ -681,6 +642,9 @@ $ bebop-claude &use core/security &use core/code-quality "Review this PR for sec
 $ bebop-claude "Generate GitHub review comments for the issues found"
 
 # Claude generates review comments
+
+# End session and print summary
+$ bebop hook session-end --tool claude
 ```
 
 ---
@@ -700,40 +664,26 @@ $ # If good, run without --dry-run
 $ bebop-claude "Create a complex feature"
 ```
 
-### 2. Use Session Management
+### 2. Usage tracking (optional)
 
 ```bash
-# ✅ Good: Track progress in sessions
-$ bebop session start
-$ bebop-claude "Task 1"
-$ # ... work ...
-$ bebop session continue
-$ bebop-claude "Task 2"
-$ bebop session end
-
-# ❌ Bad: Untracked work
+# ✅ Good: Track a long run and get a summary
+$ bebop hook session-start --tool claude
 $ bebop-claude "Task 1"
 $ # ... work ...
 $ bebop-claude "Task 2"
-# No history/context tracking
+$ bebop stats --session --tool claude
+$ bebop hook session-end --tool claude
+
+# ✅ Also fine: Don’t track sessions (Bebop still compiles guardrails)
+$ bebop-claude "Task 1"
+$ # ... work ...
+$ bebop-claude "Task 2"
 ```
 
-### 3. Leverage Plans
+### 3. Roadmap: Plans
 
-```bash
-# ✅ Good: Use plans for repetitive workflows
-$ bebop plan run create-endpoint route=POST:/items name=CreateItem
-$ # Work through steps systematically
-
-# ❌ Bad: Manually type each step
-$ bebop-claude "Read docs"
-$ # Read docs...
-$ bebop-claude "Create route handler"
-$ # Create route...
-$ bebop-claude "Create service"
-$ # Create service...
-# Easy to miss steps
-```
+Planned long-term: multi-step plan execution via a plan IR + step runner. See `PLANS.md`.
 
 ### 4. Use Appropriate Packs
 
@@ -742,40 +692,30 @@ $ # Create service...
 $ bebop-claude &use core/security "Add JWT authentication"
 $ bebop-claude &use core/code-quality "Refactor this function"
 
-# ❌ Bad: Use everything
-$ bebop-claude &use * "Add JWT authentication"
-# Too many constraints, may be irrelevant
+# Avoid: including lots of unrelated packs “just in case”
 ```
 
-### 5. Track Token Savings
+### 5. Track Usage
 
 ```bash
 # Check stats regularly
 $ bebop stats
 
-📊 Bebop Statistics
-
-Sessions:
-  - Total: 23
-  - This week: 15
-
-Token savings:
-  - Total saved: 127,450 tokens
-  - Average per session: 5,541 tokens
-  - Cost saved: $3.82
+Bebop usage summary
+Prompts: 23
+Est. tokens (unfiltered rules): 12,450
+Est. tokens (compiled): 1,890
+Est. reduction vs unfiltered: 10,560
+Avg reduction vs unfiltered: 85%
+Note: "unfiltered rules" = all rules from selected packs; token counts are estimates.
 ```
 
 ### 6. Use Service Context
 
 ```bash
-# ✅ Good: Let bebop know which service you're working on
+# ✅ Good: Run from the service directory so path-based rules apply
 cd services/api/users
 $ bebop-claude "Add login endpoint"
-
-# Or specify manually
-$ bebop-claude &svc userservice "Add login endpoint"
-
-# Bebop can select service-specific rules
 ```
 
 ---
@@ -787,7 +727,7 @@ $ bebop-claude &svc userservice "Add login endpoint"
 **Diagnosis:**
 ```bash
 # Test bebop compilation
-$ bebop compile &use core example "test"
+$ bebop compile &use core/security &use core/code-quality "test"
 Task: test
 
 Active constraints:
@@ -801,21 +741,21 @@ $ claude "test"
 
 **Solution:** Use wrapper script
 ```bash
-$ bebop-claude &use core example "test"
+$ bebop-claude &use core/security &use core/code-quality "test"
 ```
 
 ### Issue: "Compiled prompt too long"
 
 **Diagnosis:**
 ```bash
-$ bebop compile &use * "test"
-# Many rules loaded → prompt too long
+$ bebop compile &use core/security &use core/code-quality "test" | wc -w
+# If the word count is higher than expected, you're probably selecting too many constraints
 ```
 
-**Solution:** Use specific packs
+**Solution:** Use fewer/more-specific packs
 ```bash
-$ bebop compile &use core/example "test"
-# Only relevant rules
+$ bebop compile &use core/code-quality "test"
+# Fewer constraints → shorter prompt
 ```
 
 ### Issue: "Constraints not being applied"
@@ -830,9 +770,10 @@ $ pwd
 # Should match pack's path patterns
 ```
 
-**Solution:** Use &svc directive
+**Solution:** Run from the relevant directory (so `applies_when.paths` matches)
 ```bash
-$ bebop-claude &svc userservice "Add login endpoint"
+$ cd services/api/users
+$ bebop-claude &use core/security &use core/code-quality "Add login endpoint"
 ```
 
 ### Issue: "Claude ignores constraints"
@@ -850,43 +791,24 @@ $ bebop-claude --dry-run "Create feature"
 
 ---
 
-## Token Savings Example
+## Guardrails Example
 
 ### Without Bebop
 
 ```bash
 $ claude "Create a user authentication system with JWT"
 
-# What Claude receives:
-# 1. Your task (15 words, ~20 tokens)
-# 2. Full CLAUDE.md (674 lines, ~850 tokens)
-# 3. Full coding standards (200 lines, ~250 tokens)
-# 4. Full project guidelines (150 lines, ~200 tokens)
-#
-# Total: ~1,320 tokens
-# Cost: ~$0.04
-# Response time: ~90 seconds
+# If standards aren’t explicitly present, you’ll often correct and retry.
 ```
 
 ### With Bebop
 
 ```bash
-$ bebop-claude &use core/example &use core/security "Create a user authentication system with JWT"
+$ bebop-claude &use core/security &use core/code-quality "Create a user authentication system with JWT"
 
 # What Claude receives:
-# 1. Your task (15 words, ~20 tokens)
-# 2. Compiled constraints:
-#    - [NO_SECRETS] Never add secrets... (~20 tokens)
-#    - [USE_STANDARD_JWT] Use standard JWT... (~25 tokens)
-#    - [VALIDATE_INPUTS] Validate all inputs... (~20 tokens)
-#    - [WRITE_TESTS] Write comprehensive tests... (~20 tokens)
-#
-# Total: ~105 tokens
-# Cost: ~$0.003
-# Response time: ~7 seconds
-#
-# Savings: 92% (1,320 → 105 tokens)
-# Time savings: 83% faster
+# - Your task
+# - A compact list of active constraints (guardrails)
 ```
 
 ---
@@ -917,19 +839,19 @@ npm install -g @bebophq/cli
 bebop init
 
 # 2. Try pre-compile
-bebop compile &use core/example "Create a feature"
+bebop compile &use core/security &use core/code-quality "Create a feature"
 # Copy and paste to Claude Code
 
 # 3. Try wrapper (optional)
 cp scripts/bebop-claude.sh ~/bin/bebop-claude
 chmod +x ~/bin/bebop-claude
 export PATH="$HOME/bin:$PATH"
-bebop-claude &use core/example "Create a feature"
+bebop-claude &use core/security &use core/code-quality "Create a feature"
 ```
 
 ---
 
-**Start saving tokens with Claude Code today!** 🚀
+**Start shipping with guardrails in Claude Code today.**
 
 ## Resources
 

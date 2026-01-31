@@ -30,7 +30,7 @@ Collection of skills for integrating Bebop with AI agents and tools.
 - ✅ Smart pack selection - selects relevant packs automatically
 - ✅ Keyword-aware - adjusts based on task keywords (test, security, etc.)
 - ✅ Git-aware - understands branch types and context
-- ✅ 91% token savings - automatically!
+- ✅ Consistent guardrails - automatically
 
 **Quick Start:**
 ```bash
@@ -134,9 +134,9 @@ See [bebop-auto-skill.md](bebop-auto-skill.md) for full configuration options.
 | **Usage** | Type `&use core/security` every time | Just type task normally |
 | **Pack Selection** | Manual | Automatic |
 | **Context Detection** | Manual | Automatic |
-| **Token Savings** | 93% (with effort) | 91% (automatic) |
+| **Boilerplate** | Easy to forget | Automatically included |
 | **User Effort** | High | Zero |
-| **Consistency** | Variable | Guaranteed |
+| **Consistency** | Variable | More consistent |
 
 ---
 

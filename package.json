@@ -1,7 +1,7 @@
 {
   "name": "@bebophq/cli",
   "version": "0.1.1",
-  "description": "Control-plane for agent sessions - reduce token usage by 90%+ with indirection and stateful execution",
+  "description": "Guardrails + context layer for AI coding agents: compile standards into constraint packs and auto-apply them across tools",
   "main": "dist/index.js",
   "bin": {
     "bebop": "dist/cli.js"

@@ -74,7 +74,8 @@ rules:
 ## Usage
 
 ```bash
-bebop pack use core/security@v1
+bebop pack show core/security@v1
+bebop compile "&use core/security Create an endpoint"
 ```
 
 ## Examples

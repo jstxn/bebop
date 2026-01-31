@@ -35,6 +35,7 @@ export interface PackRegistryOptions {
 
 export class PackRegistry {
   private readonly dirs: string[];
+  private packCache: Pack[] | null = null;
 
   constructor(options: PackRegistryOptions = {}) {
     const workspaceRoot = options.workspaceRoot || process.cwd();
@@ -65,33 +66,25 @@ export class PackRegistry {
   async loadPack(packId: string): Promise<Pack | null> {
     const parsed = parsePackIdentifier(packId);
 
-    for (const dir of this.dirs) {
-      if (!(await fileExists(dir))) {
-        continue;
-      }
-
-      const files = await fs.readdir(dir);
-      for (const file of files) {
-        const ext = path.extname(file).toLowerCase();
-        if (!['.md', '.yaml', '.yml'].includes(ext)) continue;
-
-        const fullPath = path.join(dir, file);
-        const pack = await this.parsePackFile(fullPath);
-        if (!pack) continue;
-
-        if (pack.id !== parsed.id) continue;
-        if (parsed.version && !versionsMatch(parsed.version, pack.version)) continue;
-
-        return pack;
-      }
+    const packs = await this.loadAllPacks();
+    for (const pack of packs) {
+      if (pack.id !== parsed.id) continue;
+      if (parsed.version && !versionsMatch(parsed.version, pack.version)) continue;
+      return pack;
     }
 
     return null;
   }
 
   async listAvailable(): Promise<Pack[]> {
-    const found: Pack[] = [];
+    const packs = await this.loadAllPacks();
+    return [...packs];
+  }
 
+  private async loadAllPacks(): Promise<Pack[]> {
+    if (this.packCache) return this.packCache;
+
+    const found: Pack[] = [];
     for (const dir of this.dirs) {
       if (!(await fileExists(dir))) continue;
 
@@ -107,6 +100,7 @@ export class PackRegistry {
       }
     }
 
+    this.packCache = found;
     return found;
   }
 

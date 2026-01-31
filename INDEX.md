@@ -7,7 +7,7 @@ Everything you need to use, understand, or contribute to Bebop.
 ## 🚀 Quick Start
 
 **For Claude Code Users:**
-- → [TRY_WITH_CLAUDE.md](TRY_WITH_CLAUDE.md) - 2-minute setup, 94% token savings
+- → [TRY_WITH_CLAUDE.md](TRY_WITH_CLAUDE.md) - 2-minute setup, automatic guardrails
 
 **For All AI CLI Users:**
 - → [QUICKSTART_CLI.md](QUICKSTART_CLI.md) - 5-minute setup, works with any AI CLI
@@ -98,7 +98,7 @@ Everything you need to use, understand, or contribute to Bebop.
 - ✅ Auto-selects relevant Bebop packs based on detected context
 - ✅ Automatically compiles optimized prompts with Bebop
 - ✅ Works with any AI tool (Claude, opencode, Cursor, Codex, etc.)
-- ✅ 91% token savings automatically
+- ✅ Keeps standards consistent without re-typing
 - ✅ Zero manual effort - no typing of `&use`, `&pack` directives needed
 
 ### Usage
@@ -146,10 +146,9 @@ opencode "Create a REST API endpoint"
 
 ### Key Features
 ✅ Works with Claude Code, opencode, Cursor, Copilot, GPT-4
-✅ 93% average token reduction
-✅ 92% faster response times
-✅ 92% cheaper per session
-✅ No implementation needed (specification only)
+✅ Context-aware constraint packs (security, quality, etc.)
+✅ Automatic integration via hooks/plugins/aliases
+✅ More consistent outputs with less rework
 
 ---
 
@@ -209,7 +208,7 @@ opencode "Create a REST API endpoint"
 
 ### For Users
 - [ ] Try Bebop with your AI CLI today
-- [ ] Save tokens immediately (93% reduction)
+- [ ] Roll out guardrails to your team
 - [ ] Create custom packs for your project
 - [ ] Create plans for common workflows
 - [ ] Share your experience in GitHub issues
@@ -233,21 +232,20 @@ opencode "Create a REST API endpoint"
 ## 💡 Key Insights
 
 ### What Bebop Solves
-1. **Token waste** - Sending full documentation every prompt (1,300+ tokens)
-2. **Context loss** - Agent forgets constraints after ~10 turns
+1. **Context drift** - Agents forget or inconsistently apply standards over time
+2. **Repeated back-and-forth** - “Don’t do X” corrections burn cycles
 3. **Inconsistency** - Same task, different results across sessions
 4. **No control** - Can't enforce guardrails reliably
 
 ### How Bebop Works
-1. **Indirection** - Use IDs/handles instead of full text
-2. **Stateful execution** - Only current step in context
-3. **Out-of-band storage** - Documentation never hits the model
-4. **CLI-side enforcement** - Validate before prompting
+1. **Constraint packs** - Turn standards into versioned, reusable rules
+2. **Context detection** - Detect project/service/task signals locally
+3. **Selective injection** - Send only relevant constraints for the current task
+4. **CLI-side enforcement** - Block/warn on obvious violations before prompting
 
 ### Why It's Revolutionary
-- **93% token reduction** - Not compression, but true indirection
-- **92% faster** - Smaller prompts = faster processing
-- **92% cheaper** - $0.003/session vs $0.40/session
+- **Standards as infrastructure** - guardrails follow you across tools
+- **Reliability at scale** - fewer regressions from “agent forgot the rules”
 - **Deterministic** - Same input = same output
 - **Enforceable** - CLI-side validation, not model-dependent
 
@@ -277,8 +275,8 @@ This index ties together:
 
 ---
 
-**Start saving tokens today!** 🚀
+**Start shipping with guardrails today.**
 
 ---
 
-*Last updated: January 29, 2025*
+*Last updated: January 31, 2026*

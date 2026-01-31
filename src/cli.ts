@@ -103,6 +103,11 @@ function resolveTool(options: { tool?: string }): string {
   return options.tool || process.env.BEBOP_TOOL || 'cli';
 }
 
+function shouldLogUsage(): boolean {
+  const raw = (process.env.BEBOP_USAGE_LOG ?? process.env.BEBOP_LOG ?? '').toLowerCase();
+  return raw !== '0' && raw !== 'false' && raw !== 'off';
+}
+
 async function logCompile(
   tool: string,
   input: string,
@@ -111,6 +116,7 @@ async function logCompile(
   packs: string[],
   context: { project: string; framework: string | null; service: string | null },
 ): Promise<void> {
+  if (!shouldLogUsage()) return;
   try {
     let session = await getActiveSession(tool);
     if (!session) {

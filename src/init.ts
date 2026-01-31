@@ -286,7 +286,7 @@ function buildAliasBlock(tools: string[]): string {
   const template = (tool: string) => `# Bebop automatic integration for ${tool}
 ${tool}() {
   local input="$*"
-  if [[ "$input" == "/bebop"* ]]; then
+  if [[ "$1" == "/bebop"* ]]; then
     if [[ "$input" == "/bebop start"* ]]; then
       bebop hook session-start --tool ${tool}
     elif [[ "$input" == "/bebop end"* ]] || [[ "$input" == "/bebop summary"* ]]; then
@@ -296,10 +296,88 @@ ${tool}() {
     fi
     return 0
   fi
-  if [[ "$input" != *"Active constraints:"* ]]; then
-    input=$(bebop hook compile --tool ${tool} <<< "$input")
+
+  if [[ "$input" == *"Active constraints:"* ]]; then
+    command ${tool} "$@"
+    return $?
   fi
-  command ${tool} "$input"
+
+  if [[ $# -eq 0 ]]; then
+    command ${tool}
+    return $?
+  fi
+
+  # Don't interfere with piped/redirected stdin.
+  if [ ! -t 0 ]; then
+    command ${tool} "$@"
+    return $?
+  fi
+
+  # If the user provides an explicit end-of-options delimiter, treat everything after it as the prompt.
+  local -a prefix=()
+  local -a prompt_parts=()
+  local after_delim=0
+  for arg in "$@"; do
+    if [[ $after_delim -eq 0 ]]; then
+      prefix+=("$arg")
+      if [[ "$arg" == "--" ]]; then
+        after_delim=1
+      fi
+    else
+      prompt_parts+=("$arg")
+    fi
+  done
+
+  if [[ $after_delim -eq 1 ]]; then
+    if [[ ${#prompt_parts[@]} -eq 0 ]]; then
+      command ${tool} "$@"
+      return $?
+    fi
+    local prompt_text="${prompt_parts[*]}"
+    local compiled=""
+    compiled=$(bebop compile --tool ${tool} <<< "$prompt_text") || return $?
+    command ${tool} "${prefix[@]}" "$compiled"
+    return $?
+  fi
+
+  # If directives are present, treat the first directive (and everything after it) as the prompt.
+  prefix=()
+  prompt_parts=()
+  local in_prompt=0
+  for arg in "$@"; do
+    if [[ $in_prompt -eq 0 && "$arg" == &* ]]; then
+      in_prompt=1
+    fi
+    if [[ $in_prompt -eq 1 ]]; then
+      prompt_parts+=("$arg")
+    else
+      prefix+=("$arg")
+    fi
+  done
+
+  if [[ $in_prompt -eq 1 ]]; then
+    local prompt_text="${prompt_parts[*]}"
+    local compiled=""
+    compiled=$(bebop compile --tool ${tool} <<< "$prompt_text") || return $?
+    if [[ ${#prefix[@]} -gt 0 ]]; then
+      command ${tool} "${prefix[@]}" "$compiled"
+    else
+      command ${tool} "$compiled"
+    fi
+    return $?
+  fi
+
+  # If flags are present but we can't safely tell what is prompt vs. flag values, pass through unchanged.
+  for arg in "$@"; do
+    if [[ "$arg" == -* ]]; then
+      command ${tool} "$@"
+      return $?
+    fi
+  done
+
+  local compiled=""
+  compiled=$(bebop compile --tool ${tool} <<< "$input") || return $?
+  command ${tool} "$compiled"
 }`;
 
   for (const tool of tools) {
@@ -357,8 +435,8 @@ if [ -z "$COMPILED" ] || [ "$COMPILED" = "null" ]; then
   exit 0
 fi
 
-# Extract just the "Active constraints" section (up to 15 constraints)
-CONSTRAINTS=$(echo "$COMPILED" | grep -A 20 "Active constraints:" | head -18)
+# Extract the "Active constraints" section (includes Context line)
+CONSTRAINTS=$(echo "$COMPILED" | sed -n '/^Active constraints:/,/^Context:/p')
 
 # If we got constraints, output them as additional context
 if [ -n "$CONSTRAINTS" ]; then

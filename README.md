@@ -9,7 +9,7 @@
 [![npm version](https://badge.fury.io/js/%40bebophq%2Fcli.svg)](https://badge.fury.io/js/%40bebophq%2Fcli)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Reduce token usage by 90%+ with intelligent constraint compilation
+Automatic guardrails and context-aware constraints (across Claude Code, Cursor, Codex, and more)
 
 </div>
 
@@ -17,11 +17,13 @@ Reduce token usage by 90%+ with intelligent constraint compilation
 
 ## What is Bebop?
 
-Bebop optimizes prompts for AI coding assistants like **Claude Code**, **Cursor**, and **Codex**. It works invisibly in the background, adding relevant coding constraints to your prompts without you having to do anything.
+Bebop is a **guardrails layer** for AI coding assistants like **Claude Code**, **Cursor**, and **Codex**. It works invisibly in the background, injecting relevant coding constraints so your standards stay consistent across tools and across long sessions.
 
-**The problem:** AI coding tools need context about your project's standards—security practices, code style, testing requirements. Normally this means sending large documentation files (500-1000+ tokens) with every request.
+**The problem:** your standards live in docs, wikis, `CLAUDE.md`, and tribal knowledge. In practice, people either paste rules repeatedly or skip them—and the agent drifts (security misses, style inconsistency, “why did you do X?” back-and-forth).
 
-**The solution:** Bebop compiles your rules into compact constraints (~50-150 tokens) and automatically injects them into your prompts. Same rules, 90% fewer tokens.
+**The solution:** Bebop compiles your rules into **versioned constraint packs** and automatically injects the right constraints for the current context. This makes outputs more reliable and reduces rework. In workflows where teams currently paste long guidelines, it can also reduce prompt boilerplate significantly.
+
+**Note:** Bebop does **not** change a model’s hard context window or a provider’s usage limits—it helps you use the context you already have more effectively.
 
 ---
 
@@ -74,7 +76,7 @@ You see only your original prompt. Bebop's constraints are injected as additiona
 | **Claude Code** | ✅ Supported | UserPromptSubmit hook |
 | **Cursor** | ✅ Supported | Hook integration |
 | **opencode** | ✅ Supported | Plugin |
-| **Codex** | 🔜 Coming | Shell aliases |
+| **Codex** | ✅ Supported | Shell aliases |
 
 Run `bebop init --auto` to automatically detect and configure your installed tools.
 
@@ -82,7 +84,7 @@ Run `bebop init --auto` to automatically detect and configure your installed too
 
 ## Check Your Stats
 
-See how much Bebop is saving you:
+See what Bebop is injecting and the estimated prompt impact:
 
 ```bash
 bebop stats
@@ -91,10 +93,11 @@ bebop stats
 ```
 Bebop usage summary
 Prompts: 47
-Original tokens: 12,450
-Compiled tokens: 1,890
-Tokens saved: 10,560
-Average savings: 85%
+Est. tokens (unfiltered rules): 12,450
+Est. tokens (compiled): 1,890
+Est. reduction vs unfiltered: 10,560
+Avg reduction vs unfiltered: 85%
+Note: "unfiltered rules" = all rules from selected packs; token counts are estimates.
 ```
 
 ---

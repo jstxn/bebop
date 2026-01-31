@@ -38,8 +38,8 @@ export const errors = {
       'PACK_NOT_FOUND',
       [
         'Run `bebop pack list` to see available packs',
-        'Create a new pack with `bebop pack create --name <id>`',
-        'Check the pack ID is correct (e.g., namespace/pack@version)'
+        'Import a pack from a file with `bebop pack import <file>`',
+        'See `PACKS.md` for pack IDs and pack format'
       ],
       { packId: id }
     ),
@@ -49,9 +49,9 @@ export const errors = {
       `Plan not found: ${id}`,
       'PLAN_NOT_FOUND',
       [
-        'Run `bebop plan list` to see available plans',
-        'Create a new plan with `bebop plan create --name <id>`',
-        'Check the plan ID is correct (e.g., namespace/plan@version)'
+        'Plan execution is not implemented in this version of Bebop',
+        'See `PLANS.md` for the plan/step-runner roadmap',
+        'Use `bebop compile` or `bebop compile-auto` to apply packs today'
       ],
       { planId: id }
     ),
@@ -61,8 +61,8 @@ export const errors = {
       `Alias not found: ${alias}`,
       'ALIAS_NOT_FOUND',
       [
-        'Run `bebop alias list` to see available aliases',
-        'Create an alias with `bebop alias add <name> <target>`'
+        'Aliases are not implemented in this version of Bebop',
+        'Use full pack IDs (e.g., `core/security@v1`) for now'
       ],
       { alias }
     ),
@@ -73,21 +73,21 @@ export const errors = {
       `Session not found: ${id}`,
       'SESSION_NOT_FOUND',
       [
-        'Run `bebop session list` to see available sessions',
-        'Start a new session with `bebop session start`',
-        'Use `bebop session continue` to resume the last session'
+        'Session listing/lookup is not implemented in this version of Bebop',
+        'Start a tracked session with `bebop hook session-start --tool <name>`',
+        'View session stats with `bebop stats --session --tool <name>`'
       ],
       { sessionId: id }
     ),
   
   NO_ACTIVE_SESSION: () =>
     new BebopError(
-      'No active session. Start one with `bebop session start` or `bebop chat`',
+      'No active session. Start one with `bebop hook session-start --tool <name>`',
       'NO_ACTIVE_SESSION',
       [
-        'Run `bebop chat <input>` to start a new session',
-        'Run `bebop session start` to create a session',
-        'Run `bebop session list` to see available sessions'
+        'Start a tracked session with `bebop hook session-start --tool <name>`',
+        'Running `bebop compile --tool <name>` also starts a session implicitly',
+        'View session stats with `bebop stats --session --tool <name>`'
       ]
     ),
   
@@ -97,7 +97,7 @@ export const errors = {
       'INVALID_SESSION_ID',
       [
         'Session IDs should be in format: session_<timestamp>_<hash>',
-        'Run `bebop session list` to see valid session IDs'
+        'Use `bebop stats --session --tool <name>` to see the active session ID'
       ],
       { sessionId: id }
     ),
@@ -108,9 +108,9 @@ export const errors = {
       `Invalid directive: ${directive}`,
       'INVALID_DIRECTIVE',
       [
-        'Check directive syntax in `docs/cli-reference.md`',
+        'Check directive syntax in `DIRECTIVES.md`',
         'Ensure parameters are in `key=value` format',
-        'Run `bebop help` to see available directives'
+        'Run `bebop --help` to see available commands'
       ],
       { directive, reason }
     ),
@@ -120,8 +120,8 @@ export const errors = {
       `Unknown directive: ${directive}`,
       'UNKNOWN_DIRECTIVE',
       [
-        'Available directives: &use, &pack, &plan, &svc, &step, &rules, &dry-run',
-        'Check directive syntax in `docs/cli-reference.md`'
+        'Available directives: &use, &pack',
+        'Check directive syntax in `DIRECTIVES.md`'
       ],
       { directive }
     ),
@@ -132,9 +132,9 @@ export const errors = {
       `Invalid pack syntax: ${details}`,
       'INVALID_PACK_SYNTAX',
       [
-        'Check pack YAML syntax',
-        'Run `bebop pack compile <id>` to validate',
-        'See `docs/pack-authoring.md` for pack format'
+        'Check pack YAML/Markdown syntax',
+        'Try importing again with `bebop pack import <file>` after fixing the file',
+        'See `PACKS.md` for pack format'
       ],
       { details }
     ),
@@ -144,9 +144,9 @@ export const errors = {
       `Invalid plan syntax: ${details}`,
       'INVALID_PLAN_SYNTAX',
       [
-        'Check plan YAML syntax',
-        'Run `bebop plan compile <id>` to validate',
-        'See `docs/plan-authoring.md` for plan format'
+        'Plan execution is not implemented in this version of Bebop',
+        'See `PLANS.md` for the plan format (roadmap)',
+        'Use `bebop compile` or `bebop compile-auto` to apply packs today'
       ],
       { details }
     ),
@@ -156,9 +156,9 @@ export const errors = {
       `Invalid config value: ${key} = ${value}`,
       'INVALID_CONFIG',
       [
-        'Run `bebop config get` to see current config',
-        'Run `bebop config set <key> <value>` to set a valid value',
-        'See `docs/cli-reference.md` for valid config options'
+        'Bebop config is set via `.bebop-auto.yaml` (auto pack selection)',
+        'Check the YAML file for typos and invalid values',
+        'Run `bebop select-packs --json` to verify selection behavior'
       ],
       { key, value, reason }
     ),
@@ -183,7 +183,7 @@ export const errors = {
       'FILE_NOT_FOUND',
       [
         'Check the file path is correct',
-        'Run `bebop init --import <file>` from the correct directory',
+        'If importing a pack, run `bebop pack import <file>` from the correct directory',
         'Ensure you have read permissions for the file'
       ],
       { filePath }
@@ -208,8 +208,8 @@ export const errors = {
       'STEP_OUT_OF_RANGE',
       [
         `Valid steps are 1-${totalSteps}`,
-        'Run `bebop plan show <id>` to see all steps',
-        'Use `&step N` to jump to a valid step'
+        'Plan execution is not implemented in this version of Bebop',
+        'See `PLANS.md` for the plan/step-runner roadmap'
       ],
       { step, totalSteps }
     ),
@@ -219,9 +219,9 @@ export const errors = {
       `Plan already running in session: ${sessionId}`,
       'PLAN_ALREADY_RUNNING',
       [
-        'Run `bebop session show` to see the current session',
-        'End the session with `bebop session end` to start a new plan',
-        'Use `bebop step <N>` to continue the current plan'
+        'Plan execution is not implemented in this version of Bebop',
+        'See `PLANS.md` for the plan/step-runner roadmap',
+        'Use `bebop compile` or `bebop compile-auto` to apply packs today'
       ],
       { sessionId }
     ),
@@ -234,7 +234,7 @@ export const errors = {
       [
         'Review the rule requirements',
         'Run `bebop pack show <id>` to see rule details',
-        'Use `&rules -${ruleId}` to disable this rule temporarily'
+        'Edit the pack rule or disable enforcement with --no-enforce (if appropriate)'
       ],
       { ruleId, reason }
     ),
@@ -283,7 +283,7 @@ export const errors = {
       [
         'Check the file format is valid',
         'Ensure the file is accessible',
-        'See `docs/pack-authoring.md` for import requirements'
+        'See `PACKS.md` for import requirements'
       ],
       { file, reason }
     ),

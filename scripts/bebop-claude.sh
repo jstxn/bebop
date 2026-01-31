@@ -1,6 +1,6 @@
 #!/bin/bash
 # Bebop wrapper for Claude Code CLI
-# Usage: ./bebop-claude.sh "&use core example Create a feature"
+# Usage: ./bebop-claude.sh "&use core/security &use core/code-quality Create a feature"
 
 set -e
 
@@ -35,49 +35,66 @@ if ! command -v claude &> /dev/null; then
     exit 1
 fi
 
-# Get input
-USER_INPUT="$@"
-
-# Check for --dry-run flag
-if [[ "$USER_INPUT" == *"--dry-run"* ]]; then
-    print_info "Dry run mode - showing compiled prompt"
-    bebop compile "$USER_INPUT"
-    exit 0
-fi
-
-# Check for --help flag
-if [[ "$USER_INPUT" == *"--help"* ]] || [[ -z "$USER_INPUT" ]]; then
+show_help() {
     echo "Bebop wrapper for Claude Code CLI"
     echo ""
-    echo "Usage: bebop-claude \"[directives] [task]\""
+    echo "Usage: bebop-claude [--dry-run] [--verbose] \"[directives] [task]\""
     echo ""
     echo "Examples:"
-    echo "  bebop-claude \"&use core example Create a user service\""
-    echo "  bebop-claude \"&plan create-endpoint route=POST:/users name=CreateUser\""
-    echo "  bebop-claude \"--dry-run &use core example Create a feature\""
+    echo "  bebop-claude \"&use core/security &use core/code-quality Create a user service\""
+    echo "  bebop-claude --dry-run \"&use core/security Create an endpoint\""
     echo ""
     echo "Options:"
-    echo "  --dry-run    Show compiled prompt without sending to Claude"
+    echo "  --dry-run     Show compiled prompt without sending to Claude"
+    echo "  --verbose     Print the raw input before compiling"
     echo "  --help        Show this help message"
     echo ""
     echo "Directives:"
-    echo "  &use <alias>     Load packs by alias"
-    echo "  &pack <id>       Load pack by ID"
-    echo "  &plan <id>       Load plan by ID"
-    echo "  &svc <name>      Set service context"
-    echo "  &step <n>        Jump to plan step"
-    echo "  &rules +/-<id>   Override rules"
+    echo "  &use <pack...>   Include packs (e.g., &use core/security &use core/code-quality)"
+    echo "  &pack <id>       Include a pack by ID (e.g., &pack core/security@v1)"
+    echo ""
+    echo "Usage tracking (optional):"
+    echo "  bebop hook session-start --tool claude"
+    echo "  bebop stats --session --tool claude"
+    echo "  bebop hook session-end --tool claude"
+}
+
+# Parse wrapper flags
+DRY_RUN=false
+VERBOSE=false
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --dry-run) DRY_RUN=true; shift ;;
+        --verbose) VERBOSE=true; shift ;;
+        --help|-h) show_help; exit 0 ;;
+        --) shift; break ;;
+        *) break ;;
+    esac
+done
+
+USER_INPUT="$*"
+if [[ -z "$USER_INPUT" ]]; then
+    show_help
     exit 0
 fi
 
 # Compile prompt
 print_info "Compiling prompt with Bebop..."
-COMPILED=$(bebop compile "$USER_INPUT" 2>&1)
+if [[ "$VERBOSE" == "true" ]]; then
+    echo "Input: $USER_INPUT"
+    echo ""
+fi
 
-if [ $? -ne 0 ]; then
-    print_error "Compilation failed:"
-    echo "$COMPILED"
+if ! COMPILED=$(bebop compile --tool claude <<< "$USER_INPUT"); then
+    print_error "Compilation failed"
     exit 1
+fi
+
+if [[ "$DRY_RUN" == "true" ]]; then
+    print_info "Dry run - compiled prompt:"
+    echo ""
+    echo "$COMPILED"
+    exit 0
 fi
 
 # Show stats
