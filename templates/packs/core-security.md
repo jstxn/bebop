@@ -18,7 +18,7 @@ rules:
         - 'password\s*='
         - 'secret\s*='
         - 'token\s*='
-        - '-----BEGIN.*KEY-----'
+        - "-----BEGIN.*KEY-----"
 
   - id: NO_HARD_CREDENTIALS
     text: "Never hardcode credentials. Use environment variables or secret managers."
@@ -27,7 +27,8 @@ rules:
     enforce:
       type: diff-scan
       deny_patterns:
-        - '["\'][A-Za-z0-9+/]{32,}["\']'  # Likely API keys
+        - |-
+          ["][A-Za-z0-9+/]{32,}["]  # Likely API keys
 
   - id: VALIDATE_ALL_INPUTS
     text: "Validate and sanitize all user inputs to prevent injection attacks (SQL, XSS, command injection)."
@@ -79,34 +80,40 @@ bebop pack use core/security@v1
 ## Examples
 
 ### Bad (violates NO_SECRETS)
+
 ```typescript
-const apiKey = "sk-proj-abc123...";  // ❌ Violates NO_SECRETS
+const apiKey = "sk-proj-abc123..."; // ❌ Violates NO_SECRETS
 ```
 
 ### Good
+
 ```typescript
-const apiKey = process.env.API_KEY;  // ✅ Uses environment variable
+const apiKey = process.env.API_KEY; // ✅ Uses environment variable
 ```
 
 ### Bad (violates USE_PARAMETERIZED_QUERIES)
+
 ```typescript
-const query = `SELECT * FROM users WHERE id = '${userId}'`;  // ❌ SQL injection risk
+const query = `SELECT * FROM users WHERE id = '${userId}'`; // ❌ SQL injection risk
 ```
 
 ### Good
+
 ```typescript
-const query = 'SELECT * FROM users WHERE id = $1';
-await db.query(query, [userId]);  // ✅ Parameterized query
+const query = "SELECT * FROM users WHERE id = $1";
+await db.query(query, [userId]); // ✅ Parameterized query
 ```
 
 ## Enforcement
 
 This pack includes enforcement hooks for:
+
 - **Secret scanning**: Blocks commits containing secrets
 - **Diff scanning**: Detects hardcoded credentials in changes
 - **Pattern matching**: Identifies common security vulnerabilities
 
 Run validation:
+
 ```bash
 bebop pack test core/security@v1
 ```

@@ -2,357 +2,257 @@
 
 <div align="center">
 
-**Control-plane for agent sessions**
+**Automatic prompt optimization for AI coding agents**
 
-[![npm version](https://badge.fury.io/js/%40bebop%2Fcli.svg)](https://badge.fury.io/js/%40bebop%2Fcli)
+[![npm version](https://badge.fury.io/js/%40bebophq%2Fcli.svg)](https://badge.fury.io/js/%40bebophq%2Fcli)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Reduce token usage by 90%+ with indirection and stateful execution
-
-[Quick Start](#quick-start) • [Documentation](#documentation) • [Examples](#examples) • [Contributing](#contributing)
+Reduce token usage by 90%+ with intelligent constraint compilation
 
 </div>
 
 ---
 
-## Overview
+## What is Bebop?
 
-Bebop solves the #1 problem in AI-assisted coding: **context bloat**.
+Bebop optimizes prompts for AI coding assistants like **Claude Code**, **Cursor**, and **Codex**. It works invisibly in the background, adding relevant coding constraints to your prompts without you having to do anything.
 
-Instead of sending 500-1000 tokens of documentation to the model every prompt, Bebop moves instructions out-of-band and only sends compiled, minimal constraints.
+**The problem:** AI coding tools need context about your project's standards—security practices, code style, testing requirements. Normally this means sending large documentation files (500-1000+ tokens) with every request.
 
-## Install
-
-```bash
-npm install -g @bebophq/cli
-```
-
-**Key benefits:**
-
-- 🚀 **90%+ token savings** - Only send what's needed
-- 🎯 **Consistent behavior** - Versioned, deterministic packs
-- 🔒 **Enforceable guardrails** - CLI-side validations
-- 📦 **Team collaboration** - Share packs and plans
-- 🎭 **Works with any LLM** - Cursor, Copilot, Claude, GPT-4
-- ✨ **Zero configuration** - Automatic AI CLI integration via hooks
-
-⚠️ **Current Status:** Automatic integration is in development. Manual wrappers (scripts/bebopt.sh) are available for early adopters. See [IMPLEMENTATION_PLAN_V2.md](IMPLEMENTATION_PLAN_V2.md) for details.
+**The solution:** Bebop compiles your rules into compact constraints (~50-150 tokens) and automatically injects them into your prompts. Same rules, 90% fewer tokens.
 
 ---
 
 ## Quick Start
 
-### Installation
-
 ```bash
+# Install
 npm install -g @bebophq/cli
-```
 
-**Requires:** Node.js 18+
-
-### Planned Usage (Automatic Integration) - In Development
-
-```bash
-# One-time setup (coming soon)
+# Set up automatic integration
 bebop init --auto
 
-# Then use your AI tools normally - Bebop runs automatically
-claude "Create a user authentication system"
-# Bebop auto-detects context → selects packs → compiles → sends to Claude
+# That's it! Now use your AI coding agent normally.
+# Bebop works invisibly in the background.
 ```
 
-### Current Usage (Manual Wrappers) - Available Now
-
-```bash
-# Initialize bebop registry
-bebop init
-
-# Use universal wrapper with any AI CLI
-bebopt claude "&use core example Create a REST API for users"
-bebopt opencode "&use core example Add authentication"
-
-# See what would be sent (dry-run)
-bebopt claude --dry-run "&use core example Create a user authentication system"
-```
-
----
-
-## Documentation
-
-### Implementation
-
-- [Implementation Plan V2](IMPLEMENTATION_PLAN_V2.md) - Revised plan for automatic AI CLI integration
-- [Implementation Gaps Review](IMPLEMENTATION_GAPS_REVIEW.md) - Analysis of 10 critical gaps
-- [Implementation Changes Summary](IMPLEMENTATION_CHANGES_SUMMARY.md) - Summary of all changes
-
-### Essential Reading
-
-- [Getting Started](docs/getting-started.md) - 5-minute tutorial
-- [Core Concepts](docs/core-concepts.md) - Understand how bebop works
-- [CLI Reference](docs/cli-reference.md) - All commands and options
-- [Pack Authoring](docs/pack-authoring.md) - Create your own packs
-- [Plan Authoring](docs/plan-authoring.md) - Create reusable workflows
-
-### Integration
-
-- [Cursor Integration](docs/integrations/cursor.md) - Use with Cursor
-- [VS Code Integration](docs/integrations/vscode.md) - Use with VS Code
-- [Terminal Integration](docs/integrations/terminal.md) - Command-line workflows
-- [API Reference](docs/api.md) - Programmatic usage
-
-### Advanced
-
-- [Session Management](docs/sessions.md) - Track and resume work
-- [Context Budgeting](docs/context-budgeting.md) - Manage token usage
-- [Enforcement Hooks](docs/enforcement-hooks.md) - CLI-side validations
-- [Performance Optimization](docs/performance.md) - Best practices
-
----
-
-## Examples
-
-### Example 1: Planned Automatic Usage (Coming Soon)
-
-```bash
-# User types normally - Bebop runs automatically
-claude "Create a user authentication system"
-
-# Bebop automatically:
-# 1. Detects: TypeScript + NestJS + userservice
-# 2. Selects: core/security + core/nestjs + userservice rules
-# 3. Compiles: Optimized prompt (120 tokens)
-# 4. Sends: To Claude
-
-# Result: 91% token savings, zero manual configuration
-```
-
-### Example 2: Current Manual Usage (Available Now)
-
-```bash
-# Using wrapper script
-$ bebopt claude "&use core example Create a user authentication system"
-
-Task: Create a user authentication system
-
-Active constraints:
-- [NO_SECRETS] Never add secrets (keys, tokens, passwords) to code or docs.
-- [VALIDATE_JWT] Use standard JWT libraries, don't implement crypto yourself.
-
-Step: N/A
-
-📊 Stats:
-  - Original: 1,320 tokens
-  - Compiled: 120 tokens
-  - Savings: 91%
-  - Rules active: 2
-```
-
-### Example 3: Plan-Based Workflow (Planned)
-
-```bash
-$ bebop plan run create-endpoint route=POST:/job-postings name=CreateJobPosting
-
-📋 Plan: example/screener/create-endpoint@v1
-📝 Session: session_20250129_140000_xyz789
-
-Step 1/6: Read service guide
-  → services/api/screener/.claude/claude.md
-
-💡 Complete this step, then run 'bebop step 2' to continue
-```
-
-### Example 4: Session Management (Planned)
-
-```bash
-# Start a session
-$ bebop session start
-Created session: session_20250129_150000_abc123
-
-# Continue working
-$ bebop session continue
-📝 Session: session_20250129_150000_abc123
-📍 Step: 2/6
-
-# Jump to a specific step
-$ bebop step 4
-📍 Step: 4/6
-
-# End session
-$ bebop session end
-✅ Session closed
-```
-
----
-
-## Token Savings
-
-Real-world savings from our beta users (using manual wrappers):
-
-| Use Case               | Without Bebop | With Bebop | Savings |
-| ---------------------- | ------------- | ---------- | ------- |
-| Simple function        | 850 tokens    | 95 tokens  | 89%     |
-| CRUD endpoint          | 1,200 tokens  | 110 tokens | 91%     |
-| Feature implementation | 2,500 tokens  | 180 tokens | 93%     |
-| Refactoring            | 1,800 tokens  | 130 tokens | 93%     |
-
-**Average: 92% token reduction**
-
-Note: Automatic integration (via AI CLI hooks) will provide same savings with zero manual configuration. See [IMPLEMENTATION_PLAN_V2.md](IMPLEMENTATION_PLAN_V2.md) for details.
+After running `bebop init --auto`:
+- Open Claude Code, Cursor, or your preferred AI agent
+- Type prompts normally
+- Bebop automatically adds relevant constraints
+- You never need to think about it
 
 ---
 
 ## How It Works
 
-### Planned: Automatic Integration
+When you type a prompt in your AI coding agent:
 
 ```
-Your Input:
-  Create a user login endpoint with JWT authentication
+You type:
+  "Create a REST API for user registration"
 
-          ↓
-    [AI CLI Hook Intercepts]
-          ↓
-    [Bebop Auto-Integration]
-          ↓
-  1. Detect context (TS + NestJS + userservice)
-  2. Select packs (core/security + core/nestjs)
-  3. Compile minimal prompt
-          ↓
-Compiled Prompt:
-  Task: Create a user login endpoint with JWT authentication
-
+Bebop automatically adds:
   Active constraints:
-  - [NO_SECRETS] Never add secrets...
-  - [NESTJS_CONVENTIONS] Follow NestJS patterns...
+  - [NO_SECRETS] Never add secrets to code...
+  - [VALIDATE_ALL_INPUTS] Validate all user inputs...
+  - [WRITE_TEST_COVERAGE] Write tests with >80% coverage...
 
-  Context: NestJS backend, userservice
-          ↓
-    [LLM Receives Only 120 Tokens]
-          ↓
-  Receives only essential context
-  Generates code
-  91% fewer tokens
+Claude receives both your prompt AND the constraints.
 ```
 
-### Current: Manual Wrapper
+You see only your original prompt. Bebop's constraints are injected as additional context that Claude can see and follow.
 
-```
-Your Input:
-  bebopt claude "&use core nestjs Create login endpoint"
+---
 
-          ↓
-    [Bebop CLI]
-          ↓
-  Parses directives
-  Resolves packs/plans
-  Compiles minimal prompt
-          ↓
-Compiled Prompt:
-  Task: Create login endpoint
+## Supported Tools
 
-  Active constraints:
-  - [NO_SECRETS] Never add secrets...
-  - [NESTJS_CONVENTIONS] Follow NestJS patterns...
+| Tool | Status | Integration Method |
+|------|--------|-------------------|
+| **Claude Code** | ✅ Supported | UserPromptSubmit hook |
+| **Cursor** | ✅ Supported | Hook integration |
+| **opencode** | ✅ Supported | Plugin |
+| **Codex** | 🔜 Coming | Shell aliases |
 
-          ↓
-    [LLM Receives 120 Tokens]
-          ↓
-  Receives only essential context
-  Generates code
-  91% fewer tokens
+Run `bebop init --auto` to automatically detect and configure your installed tools.
+
+---
+
+## Check Your Stats
+
+See how much Bebop is saving you:
+
+```bash
+bebop stats
 ```
 
-## Project Status
+```
+Bebop usage summary
+Prompts: 47
+Original tokens: 12,450
+Compiled tokens: 1,890
+Tokens saved: 10,560
+Average savings: 85%
+```
 
-### Specification
+---
 
-- ✅ Complete specification (12,000+ lines)
-- ✅ Ready-to-use manual wrappers (scripts/bebopt.sh, etc.)
-- ✅ Template packs/plans (3 artifacts)
-- ✅ Comprehensive documentation (10 guides)
+## Constraint Packs
 
-### Implementation
+Bebop includes two core packs:
 
-**Automatic Integration (Planned - See [IMPLEMENTATION_PLAN_V2.md](IMPLEMENTATION_PLAN_V2.md)):**
+**`core/security`** - Security best practices
+- No hardcoded secrets
+- Input validation
+- Parameterized queries
+- Encrypt sensitive data
 
-- ⏳ Phase 1: Context detection engine
-- ⏳ Phase 2: Pack selection engine
-- ⏳ Phase 3: Prompt compiler
-- ⏳ Phase 4: AI CLI hook integration (Claude Code, opencode, Cursor)
-- ⏳ Phase 6: Auto-setup (`bebop init --auto`)
+**`core/code-quality`** - Code standards
+- Write tests (>80% coverage)
+- Follow linting rules
+- Use typed interfaces
+- Keep functions small
 
-**Manual Wrappers (Available Now):**
+Bebop automatically selects relevant packs based on your project context.
 
-- ✅ Universal wrapper (bebopt.sh)
-- ✅ Claude Code wrapper (bebop-claude.sh)
-- ✅ opencode wrapper (bebop-opencode.sh)
+### Create Custom Packs
 
-**Current Version:** 0.1.0 (Alpha)
+Add your team's standards in `~/.bebop/packs/`:
 
-**Note:** See [IMPLEMENTATION_GAPS_REVIEW.md](IMPLEMENTATION_GAPS_REVIEW.md) for detailed gap analysis and [IMPLEMENTATION_CHANGES_SUMMARY.md](IMPLEMENTATION_CHANGES_SUMMARY.md) for revision summary.
+```markdown
+---
+id: my-team/api-standards
+version: 1
+---
 
-## Roadmap
+# API Standards
 
-### Priority 1: Automatic AI CLI Integration (4 weeks)
+rules:
+  - id: USE_REST_CONVENTIONS
+    constraint: "Use RESTful conventions for all API endpoints."
 
-- [ ] Phase 1: Context detection engine
-- [ ] Phase 2: Pack selection engine
-- [ ] Phase 3: Prompt compiler
-- [ ] Phase 4: AI CLI hook integration (Claude Code, opencode, Cursor)
-- [ ] Phase 6: Auto-setup (`bebop init --auto`)
+  - id: RETURN_CONSISTENT_ERRORS
+    constraint: "Return errors as: { error: string, code: string }"
+```
 
-### Priority 2: Enhancement (2 weeks)
+---
 
-- [ ] Phase 5: Enforcement hooks (secret scanning, validation)
-- [ ] Pack management CLI (list, show, create, update)
-- [ ] Plan runner with sessions
+## Advanced: CLI Commands
 
-### Priority 3: Collaboration (2 weeks)
+For debugging or manual workflows:
 
-- [ ] Phase 7: Distribution & sharing
-- [ ] Team pack registries
-- [ ] Version management
-- [ ] Analytics & optimization suggestions
+```bash
+# See what context Bebop detects
+bebop detect-context
 
-See [IMPLEMENTATION_PLAN_V2.md](IMPLEMENTATION_PLAN_V2.md) for detailed timeline.
+# Manually compile a prompt
+bebop compile "Create a login API"
+
+# Compile with specific packs
+bebop compile --packs "core/security" "Add authentication"
+
+# List available packs
+bebop pack list
+
+# View usage statistics
+bebop stats
+```
+
+---
+
+## Configuration
+
+### Project-Level Config
+
+Create `.bebop-auto.yaml` in your project root:
+
+```yaml
+# Always include these packs
+include:
+  - core/security
+  - my-team/standards
+
+# Exclude packs
+exclude:
+  - core/code-quality
+
+# Keyword triggers
+keywords:
+  auth: [core/security]
+  test: [core/testing]
+```
+
+### Disable for a Project
+
+```yaml
+# .bebop-auto.yaml
+enabled: false
+```
+
+---
+
+## Troubleshooting
+
+### Hooks not working?
+
+```bash
+# Verify installation
+bebop init --auto
+
+# Check if hooks are installed
+cat ~/.claude/settings.json | grep bebop
+```
+
+### Not seeing constraints?
+
+Bebop skips very short prompts (< 3 words) and slash commands. Try a longer, natural language prompt.
+
+### Want to see what's happening?
+
+```bash
+# Manual compilation shows exactly what Bebop adds
+bebop compile "Your prompt here"
+```
+
+---
+
+## Uninstall
+
+Remove Bebop hooks:
+
+```bash
+# Edit your settings file and remove bebop entries
+# For Claude Code:
+nano ~/.claude/settings.json
+# Remove the bebop-hook.sh entry from UserPromptSubmit
+```
+
+Uninstall the CLI:
+
+```bash
+npm uninstall -g @bebophq/cli
+```
+
+---
 
 ## Contributing
 
-We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
-
-Quick start:
-
 ```bash
-git clone https://github.com/bebop/cli.git
+git clone https://github.com/bebophq/cli.git
 cd cli
 npm install
 npm run build
 npm test
 ```
 
-## License
-
-MIT © Bebop Contributors
-
-## Support
-
-- 📖 [Documentation](docs/)
-- 💬 [Discord](https://discord.gg/bebop)
-- 🐛 [Issues](https://github.com/bebop/cli/issues)
-- ✉️ [Email](mailto:support@bebop.dev)
-
-## Acknowledgments
-
-Inspired by the real-world challenges of managing AI context at scale in production environments.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ---
 
-**Made with ❤️ by the Bebop team**
+## License
 
-<a href="https://star-history.com/#bebop/cli&Date">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=bebop/cli&type=Date&theme=dark" />
-    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=bebop/cli&type=Date" />
-    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=bebop/cli&type=Date" />
-  </picture>
-</a>
+MIT
+
+---
+
+**Questions?** Open an issue at [github.com/bebophq/cli](https://github.com/bebophq/cli/issues)

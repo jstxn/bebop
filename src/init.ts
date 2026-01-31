@@ -310,41 +310,71 @@ ${tool}() {
 }
 
 async function writeHookScript(hookPath: string, toolName: string): Promise<void> {
+  // Claude Code hook that adds constraints as additionalContext
+  // This does NOT modify the user's prompt - it adds context for Claude to see
   const content = `#!/bin/bash
-# Bebop auto integration hook
+# Bebop auto integration hook for ${toolName}
+# Adds compiled constraints as additional context without modifying the prompt
+
 set -e
 
-TOOL_NAME="${toolName}"
-USER_INPUT=$(cat)
+# Read JSON input from stdin
+INPUT=$(cat)
 
-if [[ "$USER_INPUT" == "/new"* ]] && [[ "$BEBOP_SUMMARY_ON_NEW" == "1" ]]; then
-  bebop hook session-end --tool "$TOOL_NAME" >&2 || true
-  echo "$USER_INPUT"
+# Extract the prompt and working directory
+PROMPT=$(echo "$INPUT" | jq -r '.prompt // empty')
+CWD=$(echo "$INPUT" | jq -r '.cwd // "."')
+
+# Skip if no prompt
+if [ -z "$PROMPT" ]; then
   exit 0
 fi
 
-if [[ "$USER_INPUT" == "/bebop"* ]]; then
-  if [[ "$USER_INPUT" == "/bebop start"* ]]; then
-    bebop hook session-start --tool "$TOOL_NAME" >&2
-    echo "Bebop session started."
-    exit 0
-  fi
-  if [[ "$USER_INPUT" == "/bebop end"* ]] || [[ "$USER_INPUT" == "/bebop summary"* ]]; then
-    summary=$(bebop hook session-end --tool "$TOOL_NAME" 2>&1)
-    echo "$summary"
-    exit 0
-  fi
-  summary=$(bebop stats --session --tool "$TOOL_NAME" 2>&1)
-  echo "$summary"
+# Skip if prompt is very short (likely a command or simple response)
+WORD_COUNT=$(echo "$PROMPT" | wc -w | xargs)
+if [ "$WORD_COUNT" -lt 3 ]; then
   exit 0
 fi
 
-if [[ "$USER_INPUT" == *"Active constraints:"* ]]; then
-  echo "$USER_INPUT"
+# Skip if prompt starts with / (slash command)
+if [[ "$PROMPT" == /* ]]; then
   exit 0
 fi
 
-echo "$USER_INPUT" | bebop hook compile --tool "$TOOL_NAME"
+# Skip if prompt already contains constraints
+if [[ "$PROMPT" == *"Active constraints:"* ]]; then
+  exit 0
+fi
+
+# Run bebop compile-auto to get constraints
+COMPILED=$(bebop compile-auto "$PROMPT" --cwd "$CWD" --tool "${toolName}" 2>/dev/null) || {
+  # If bebop fails, continue without constraints
+  exit 0
+}
+
+# Skip if compilation produced no useful output
+if [ -z "$COMPILED" ] || [ "$COMPILED" = "null" ]; then
+  exit 0
+fi
+
+# Extract just the "Active constraints" section (up to 15 constraints)
+CONSTRAINTS=$(echo "$COMPILED" | grep -A 20 "Active constraints:" | head -18)
+
+# If we got constraints, output them as additional context
+if [ -n "$CONSTRAINTS" ]; then
+  # Escape for JSON and output
+  ESCAPED=$(echo "$CONSTRAINTS" | sed 's/\\\\/\\\\\\\\/g' | sed 's/"/\\\\"/g' | tr '\\n' ' ')
+  cat << EOF
+{
+  "hookSpecificOutput": {
+    "hookEventName": "UserPromptSubmit",
+    "additionalContext": "$ESCAPED"
+  }
+}
+EOF
+fi
+
+exit 0
 `;
 
   if (await fileExists(hookPath)) {
@@ -365,18 +395,28 @@ async function mergeHookSettings(settingsPath: string, hookScriptPath: string): 
   const hooks = settings.hooks && typeof settings.hooks === 'object' ? settings.hooks : {};
   const entries = Array.isArray(hooks.UserPromptSubmit) ? hooks.UserPromptSubmit : [];
 
+  // UserPromptSubmit doesn't support matchers - it fires on every prompt
+  // Check if we already have a bebop hook entry
+  const bebopEntry = entries.find((entry: any) => {
+    const hooksList = Array.isArray(entry?.hooks) ? entry.hooks : [];
+    return hooksList.some((hook: any) => hook?.command?.includes('bebop'));
+  });
+
   const commandEntry = { type: 'command', command: hookScriptPath };
-  let matcherEntry = entries.find((entry: any) => entry && entry.matcher === '.*');
-  if (!matcherEntry) {
-    matcherEntry = { matcher: '.*', hooks: [commandEntry] };
-    entries.push(matcherEntry);
+
+  if (!bebopEntry) {
+    // Add new entry for bebop
+    entries.push({ hooks: [commandEntry] });
   } else {
-    const hooksList = Array.isArray(matcherEntry.hooks) ? matcherEntry.hooks : [];
+    // Update existing bebop entry
+    const hooksList = Array.isArray(bebopEntry.hooks) ? bebopEntry.hooks : [];
     const existsCommand = hooksList.some((hook: any) => hook?.command === hookScriptPath);
     if (!existsCommand) {
-      hooksList.push(commandEntry);
+      // Replace old bebop hook with new one
+      const filtered = hooksList.filter((hook: any) => !hook?.command?.includes('bebop'));
+      filtered.push(commandEntry);
+      bebopEntry.hooks = filtered;
     }
-    matcherEntry.hooks = hooksList;
   }
 
   hooks.UserPromptSubmit = entries;
