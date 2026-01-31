@@ -1,6 +1,6 @@
 {
   "name": "@bebophq/cli",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Guardrails + context layer for AI coding agents: compile standards into constraint packs and auto-apply them across tools",
   "main": "dist/index.js",
   "bin": {
@@ -55,22 +55,24 @@
   "dependencies": {
     "chalk": "^4.1.2",
     "commander": "^11.1.0",
-    "toml": "^3.0.0",
     "inquirer": "^8.2.6",
     "ora": "^5.4.1",
+    "toml": "^3.0.0",
+    "update-notifier": "^5.1.0",
     "yaml": "^2.4.5"
   },
   "devDependencies": {
-    "@types/node": "^20.10.0",
-    "@types/jest": "^29.5.10",
     "@types/inquirer": "^9.0.7",
+    "@types/jest": "^29.5.10",
+    "@types/node": "^20.10.0",
+    "@types/update-notifier": "^6.0.8",
     "@typescript-eslint/eslint-plugin": "^6.13.0",
     "@typescript-eslint/parser": "^6.13.0",
     "eslint": "^8.54.0",
     "jest": "^29.7.0",
-    "ts-jest": "^29.1.1",
-    "typescript": "^5.3.2",
     "prettier": "^3.1.0",
-    "standard-version": "^9.5.0"
+    "standard-version": "^9.5.0",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.3.2"
   }
 }

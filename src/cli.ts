@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
+import updateNotifier from 'update-notifier';
 import { ContextDetector } from './context-detector';
 import { loadAutoConfig } from './auto-config';
 import { PackSelector } from './pack-selector';
@@ -19,6 +20,16 @@ import {
   startSession,
   summarizeUsage,
 } from './usage-log';
+
+type PackageManifest = { name: string; version: string };
+
+// Check for updates in background, notify user if outdated
+const pkg = require('../package.json') as PackageManifest;
+updateNotifier({ pkg }).notify();
+
+function getCliVersion(): string {
+  return pkg.version || '0.0.0';
+}
 
 async function readStdin(): Promise<string> {
   if (process.stdin.isTTY) return '';
@@ -153,7 +164,7 @@ async function run(): Promise<void> {
   program
     .name('bebop')
     .description('Bebop CLI - automatic prompt optimization')
-    .version('0.1.0');
+    .version(getCliVersion());
 
   program
     .command('detect-context')

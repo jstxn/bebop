@@ -328,17 +328,17 @@ ${tool}() {
     fi
   done
 
-  if [[ $after_delim -eq 1 ]]; then
-    if [[ ${#prompt_parts[@]} -eq 0 ]]; then
-      command ${tool} "$@"
-      return $?
-    fi
-    local prompt_text="${prompt_parts[*]}"
-    local compiled=""
-    compiled=$(bebop compile --tool ${tool} <<< "$prompt_text") || return $?
-    command ${tool} "${prefix[@]}" "$compiled"
-    return $?
-  fi
+	  if [[ $after_delim -eq 1 ]]; then
+	    if [[ \${#prompt_parts[@]} -eq 0 ]]; then
+	      command ${tool} "$@"
+	      return $?
+	    fi
+	    local prompt_text="\${prompt_parts[*]}"
+	    local compiled=""
+	    compiled=$(bebop compile --tool ${tool} <<< "$prompt_text") || return $?
+	    command ${tool} "\${prefix[@]}" "$compiled"
+	    return $?
+	  fi
 
   # If directives are present, treat the first directive (and everything after it) as the prompt.
   prefix=()
@@ -355,17 +355,17 @@ ${tool}() {
     fi
   done
 
-  if [[ $in_prompt -eq 1 ]]; then
-    local prompt_text="${prompt_parts[*]}"
-    local compiled=""
-    compiled=$(bebop compile --tool ${tool} <<< "$prompt_text") || return $?
-    if [[ ${#prefix[@]} -gt 0 ]]; then
-      command ${tool} "${prefix[@]}" "$compiled"
-    else
-      command ${tool} "$compiled"
-    fi
-    return $?
-  fi
+	  if [[ $in_prompt -eq 1 ]]; then
+	    local prompt_text="\${prompt_parts[*]}"
+	    local compiled=""
+	    compiled=$(bebop compile --tool ${tool} <<< "$prompt_text") || return $?
+	    if [[ \${#prefix[@]} -gt 0 ]]; then
+	      command ${tool} "\${prefix[@]}" "$compiled"
+	    else
+	      command ${tool} "$compiled"
+	    fi
+	    return $?
+	  fi
 
   # If flags are present but we can't safely tell what is prompt vs. flag values, pass through unchanged.
   for arg in "$@"; do
