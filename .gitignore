@@ -30,6 +30,7 @@ Thumbs.db
 # Bebop runtime
 *.log
 *.cache
+logs/
 sessions/*.json
 
 # Test coverage
@@ -47,3 +48,6 @@ temp/
 
 # Local configuration (keep in .bebop)
 config.local.toml
+
+# Development planning docs (internal use only)
+.plans/
