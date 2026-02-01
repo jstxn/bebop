@@ -27,6 +27,40 @@ Bebop is a **guardrails layer** for AI coding assistants like **Claude Code**, *
 
 ---
 
+## Why Not Just Use CLAUDE.md?
+
+You might be wondering: "Can't I just put my rules in `CLAUDE.md` or `.cursorrules`?" 
+
+**Yes — but static files have major limitations:**
+
+| Problem | CLAUDE.md | Bebop |
+|---------|-----------|-------|
+| **All or nothing** | Every rule loads every time | Only relevant rules for current context |
+| **Cross-tool compatibility** | Cursor reads `.cursorrules`, Claude reads `CLAUDE.md` — you maintain multiple files | One set of packs works everywhere |
+| **Context waste** | Your 50 security rules eat tokens even when editing CSS | Bebop filters to ~3-5 relevant constraints |
+| **Version control** | Rules drift across projects | Versioned packs you can share and update |
+| **No visibility** | No idea what's being used or ignored | `bebop stats` shows actual impact |
+
+**Real example:**
+
+You have 40 coding standards in `CLAUDE.md`. You ask: *"Fix this CSS alignment issue."*
+
+- **With CLAUDE.md:** All 40 rules get loaded (TypeScript linting rules, API security guidelines, database standards...) — wasting ~2,000 tokens on irrelevant context
+- **With Bebop:** Detects "CSS" context → injects 2-3 frontend/style rules → ~150 tokens
+
+**The result:** More accurate responses (agent isn't distracted by irrelevant rules) and better token efficiency (5-10x reduction in constraint overhead).
+
+**When to use CLAUDE.md:**
+- Small projects with <10 simple rules
+- Single-tool workflows (you only use Cursor or only use Claude)
+
+**When to use Bebop:**
+- Teams with comprehensive standards (security, testing, style, APIs, etc.)
+- Multi-tool workflows (switching between Claude Code, Cursor, Codex)
+- Long sessions where you want constraints to stay relevant without manual reminders
+
+---
+
 ## Try it
 
 ```bash
