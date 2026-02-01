@@ -25,6 +25,7 @@ export interface AutoIntegrationResult {
 }
 
 const DEFAULT_REGISTRY_DIRS = ['packs', 'plans', 'sessions', 'projects', 'logs'];
+const BEBOP_AGENTS_MARKER = '# Agent Instructions: Bebop';
 
 export async function initRegistry(options: InitOptions = {}): Promise<InitRegistryResult> {
   const registryPath = options.registryPath || path.join(os.homedir(), '.bebop');
@@ -40,6 +41,7 @@ export async function initRegistry(options: InitOptions = {}): Promise<InitRegis
   }
 
   const copiedTemplates = await copyTemplates(registryPath);
+  await copyOrAppendAgentsFile(registryPath);
 
   return {
     registryPath,
@@ -155,6 +157,32 @@ async function copyTemplateDir(sourceDir: string, destDir: string): Promise<stri
   }
 
   return copied;
+}
+
+async function copyOrAppendAgentsFile(registryPath: string): Promise<void> {
+  const sourceFile = path.resolve(__dirname, '..', 'AGENTS.md');
+  const destFile = path.join(registryPath, 'AGENTS.md');
+
+  if (!(await fileExists(sourceFile))) {
+    return;
+  }
+
+  const sourceContent = await fs.readFile(sourceFile, 'utf8');
+
+  if (!(await fileExists(destFile))) {
+    await fs.writeFile(destFile, sourceContent, 'utf8');
+    return;
+  }
+
+  const existingContent = await fs.readFile(destFile, 'utf8');
+
+  if (existingContent.includes(BEBOP_AGENTS_MARKER)) {
+    return;
+  }
+
+  const separator = existingContent.endsWith('\n') ? '\n---\n\n' : '\n\n---\n\n';
+  const appendedContent = existingContent + separator + sourceContent;
+  await fs.writeFile(destFile, appendedContent, 'utf8');
 }
 
 async function installClaudeHook(): Promise<void> {

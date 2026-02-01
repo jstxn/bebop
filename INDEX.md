@@ -20,6 +20,7 @@ Everything you need to use, understand, or contribute to Bebop.
 ## 📚 Documentation
 
 ### Core Documentation
+- [AGENTS.md](AGENTS.md) - Instructions for AI agents using bebop
 - [DIRECTIVES.md](DIRECTIVES.md) - Directive syntax (&use, &pack, &plan, etc.)
 - [PACKS.md](PACKS.md) - Pack format and rule structure
 - [PLANS.md](PLANS.md) - Plan IR and step execution
@@ -153,6 +154,11 @@ opencode "Create a REST API endpoint"
 ---
 
 ## 🎯 How to Use This Index
+
+### I'm an AI Agent
+1. Read [AGENTS.md](AGENTS.md) - Understand how to work with bebop constraints
+2. Follow the injected constraints in prompts
+3. Help users with `bebop` commands when needed
 
 ### I'm New to Bebop
 1. Read [README.md](README.md) - Understand what Bebop is
