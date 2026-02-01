@@ -66,6 +66,11 @@ Everything you need to use, understand, or contribute to Bebop.
 ### Template Plans
 - [templates/plans/backend-create-rest-endpoint.md](templates/plans/backend-create-rest-endpoint.md) - REST endpoint creation plan
 
+### Sample Packs
+- [packs/example-react-frontend.md](packs/example-react-frontend.md) - React + TypeScript frontend
+- [packs/example-nestjs-api.md](packs/example-nestjs-api.md) - NestJS backend API
+- [packs/example-monorepo.md](packs/example-monorepo.md) - Monorepo architecture
+
 ---
 
 ## 🔧 Source Code
