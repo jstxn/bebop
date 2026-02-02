@@ -1,5 +1,7 @@
 # Bebop
 
+> **⚠️ Work in Progress** — This is an active development project. Documentation and features are evolving rapidly.
+
 <div align="center">
 
 <img src="assets/bebop.png" alt="Bebop" width="150" height="150">
