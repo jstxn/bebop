@@ -1,0 +1,56 @@
+{
+  "name": "@bebophq/tui",
+  "version": "0.1.0",
+  "description": "Bebop TUI - terminal-based AI coding agent with BYOK LLM support",
+  "type": "module",
+  "main": "dist/cli.js",
+  "types": "dist/cli.d.ts",
+  "bin": {
+    "bebop-tui": "dist/cli.js"
+  },
+  "files": [
+    "dist/",
+    "src/"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "dev": "tsx src/cli.tsx",
+    "start": "node dist/cli.js",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix"
+  },
+  "keywords": [
+    "ai",
+    "llm",
+    "agent",
+    "tui",
+    "terminal",
+    "claude",
+    "gpt",
+    "coding"
+  ],
+  "author": "Bebop Contributors",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bebophq/tui.git"
+  },
+  "dependencies": {
+    "@bebophq/core": "workspace:*",
+    "@anthropic-ai/sdk": "^0.30.0",
+    "ink": "^5.0.0",
+    "ink-text-input": "^6.0.0",
+    "ink-spinner": "^5.0.0",
+    "react": "^18.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/react": "^18.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "eslint": "^8.54.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.3.2"
+  }
+}
